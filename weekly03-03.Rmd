@@ -1,0 +1,32 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 古蹟
+
+```{r}
+heritage_data <- jsonlite::fromJSON("https://data.boch.gov.tw/data/opendata/v2/assetsCase/1.1.json")
+```
+
+```{r}
+xfun::download_file("https://data.boch.gov.tw/old_upload/_upload/Assets_new/building/487/photo/嘉義仁武宮.jpg",
+              file="photo.jpg", mode="wb")
+
+library(magick)
+photoUrl_encoded <- 
+  URLencode("https://data.boch.gov.tw/old_upload/_upload/Assets_new/building/487/photo/嘉義仁武宮.jpg")
+
+img_heritage <- image_read(photoUrl_encoded)
+
+img_heritage
+```
+
+```{r}
+browseURL(photoUrl_encoded)
+```
+
