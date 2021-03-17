@@ -1,0 +1,26 @@
+---
+title: "03-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Code
+
+```{r}
+a <- 5
+```
+
+# Activity
+
+  * Start a new repo, 
+  
+  * Create a gitter community
+  
+  * Create a gitter room under that community, at the same time, associate that room with the new repo just created.
+  
+  * Accept the pull requestion in your new repo that was created by gitter.im automatically. 
+
+# Office wifi :  be3N6SqY
