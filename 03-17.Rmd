@@ -13,3 +13,13 @@ knitr::opts_chunk$set(echo = TRUE)
 a <- 5
 ```
 
+# Activity
+
+  * Start a new repo, 
+  
+  * Create a gitter community
+  
+  * Create a gitter room under that community, at the same time, associate that room with the new repo just created.
+  
+  * Accept the pull requestion in your new repo that was created by gitter.im automatically. 
+
