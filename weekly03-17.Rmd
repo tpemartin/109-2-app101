@@ -1,0 +1,24 @@
+---
+title: "learning 03-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# page 0-1
+
+```{r}
+library(jsonlite)
+data0 <- fromJSON("https://data.boch.gov.tw/data/opendata/v2/assetsCase/1.1.json")
+```
+
+```{r}
+data0 <- jsonlite::fromJSON("https://data.boch.gov.tw/data/opendata/v2/assetsCase/1.1.json")
+```
+
+```{r}
+browseURL("https://data.boch.gov.tw/old_upload/_upload/Assets_new/building/487/photo/嘉義仁武宮.jpg")
+```
+
