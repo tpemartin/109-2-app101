@@ -13,11 +13,16 @@ knitr::opts_chunk$set(echo = TRUE)
 .root <- rprojroot::is_rstudio_project$make_fix_file()
 ```
 
-```{r}
+```{r}  #r裡面一群東西只會用c或list
 install.packages(c("rprojroot", "devtools", "rmarkdown", "drake"))
-remotes::install_github("tpemartin/econR", force=T)
+remotes::install_github("tpemartin/econR", force=T)  #python 
 remotes::install_github("tpemartin/rmd2drake", force=T)
 ```
+```{r}  
+library(remotes)
+install_github("tpemartin/econR", force=T)
+```
+
 
 ## Codes
 
