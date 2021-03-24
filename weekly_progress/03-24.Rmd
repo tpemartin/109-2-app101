@@ -31,13 +31,15 @@ remotes::install_github("tpemartin/rmd2drake", force=T)
 heritage_data <- 
 ```
 
-```{r}
-heritage_data <- jsonlite::fromJSON("https://raw.githubusercontent.com/tpemartin/109-2-app101/main/data/heritage.json")
-```
-
 #### From local
 
 ```{r}
-heritage_data <- jsonlite::fromJSON("data/heritage.json")
+heritage_data <- 
+```
+
+### User data
+
+```{r}
+user_data <- 
 ```
 
