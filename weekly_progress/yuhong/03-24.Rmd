@@ -39,7 +39,10 @@ heritage_data <- fromJSON("https://www.dropbox.com/s/jdnmlckl18n8ayc/Cornwell%20
 #### From URL
 
 ```{r}
-heritage_data <- 
+heritage_data <- fromJSON("https://www.dropbox.com/s/jdnmlckl18n8ayc/Cornwell%20and%20Rupert.csv?dl=0")
+
+library(readr)
+
 ```
 
 #### From local
