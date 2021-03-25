@@ -1,0 +1,441 @@
+---
+drake_cache: ".heritageUI"
+---
+
+# Materialized Framework
+
+```{r makecondition}
+library(dplyr)
+library(htmltools)
+```
+
+### Body Tags
+
+  * <https://pin.it/5EsttTc>
+
+```{r}
+magick::image_read("https://i.pinimg.com/564x/3d/b4/07/3db407c7a392fc1bfd96524b618da228.jpg")
+```
+
+  * Navbar on top 
+  
+  * Subcat info on bottom
+
+
+#### Navbar on top
+
+prototype:
+```{r navbar_on_top_prototype}
+navbar_on_top_prototype <- 
+  htmltools::HTML('<nav class="nav-extended">
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">Logo</a>
+      <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="sass.html">Sass</a></li>
+        <li><a href="badges.html">Components</a></li>
+        <li><a href="collapsible.html">JavaScript</a></li>
+      </ul>
+    </div>
+    <div class="nav-content">
+      <ul class="tabs tabs-transparent">
+        <li class="tab"><a href="#test1">Test 1</a></li>
+        <li class="tab"><a class="active" href="#test2">Test 2</a></li>
+        <li class="tab disabled"><a href="#test3">Disabled Tab</a></li>
+        <li class="tab"><a href="#test4">Test 4</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <ul class="sidenav" id="mobile-demo">
+    <li><a href="sass.html">Sass</a></li>
+    <li><a href="badges.html">Components</a></li>
+    <li><a href="collapsible.html">JavaScript</a></li>
+  </ul>
+
+  <div id="test1" class="col s12">Test 1</div>
+  <div id="test2" class="col s12">Test 2</div>
+  <div id="test3" class="col s12">Test 3</div>
+  <div id="test4" class="col s12">Test 4</div>')
+```
+
+```{r navbar_on_top_prototype_js}
+navbar_on_top_prototype_js <- 
+  htmltools::tags$script(
+    "document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems, options);
+  });
+"
+  )
+```
+
+```{r tabs_prototype}
+tabs_prototype <- 
+  htmltools::HTML('
+ <div class="row">
+    <div class="col s12">
+      <ul class="tabs">
+        <li class="tab col s3"><a href="#test1">Test 1</a></li>
+        <li class="tab col s3"><a class="active" href="#test2">Test 2</a></li>
+        <li class="tab col s3 disabled"><a href="#test3">Disabled Tab</a></li>
+        <li class="tab col s3"><a href="#test4">Test 4</a></li>
+      </ul>
+    </div>
+    <div id="test1" class="col s12">Test 1</div>
+    <div id="test2" class="col s12">Test 2</div>
+    <div id="test3" class="col s12">Test 3</div>
+    <div id="test4" class="col s12">Test 4</div>
+  </div>
+')
+```
+
+```{r}
+tmpl <- '
+ <div class="row">
+    <div class="col s12">
+      <ul class="tabs">
+        <li class="tab col s3"><a href="#test1">Test 1</a></li>
+        <li class="tab col s3"><a class="active" href="#test2">Test 2</a></li>
+        <li class="tab col s3 disabled"><a href="#test3">Disabled Tab</a></li>
+        <li class="tab col s3"><a href="#test4">Test 4</a></li>
+      </ul>
+    </div>
+    <div id="test1" class="col s12">Test 1</div>
+    <div id="test2" class="col s12">Test 2</div>
+    <div id="test3" class="col s12">Test 3</div>
+    <div id="test4" class="col s12">Test 4</div>
+  </div>
+'
+tmpl %>%
+  convertHTML2RTags()
+```
+
+
+```{r}
+
+ tags$div(class="row", 
+    tags$div(class="col s12", 
+      tags$ul(class="tabs", 
+        tags$li(class="tab col s3", tags$a(href="#test1"," Test 1")),
+        tags$li(class="tab col s3", tags$a(class="active", href="#test2"," Test 2")),
+        tags$li(class="tab col s3 disabled", tags$a(href="#test3"," Disabled Tab")),
+        tags$li(class="tab col s3", tags$a(href="#test4"," Test 4"))
+      )
+    ),
+    tags$div(id="test1", class="col s12"," Test 1"),
+    tags$div(id="test2", class="col s12"," Test 2"),
+    tags$div(id="test3", class="col s12"," Test 3"),
+    tags$div(id="test4", class="col s12"," Test 4")
+  )
+
+```
+
+```{r}
+stringr::str_replace_all(string, "<(?!/)", "tags$")
+stringr::str_replace_all(string, "</[a-z]+>", ")")
+```
+
+
+```{r}
+stringr::str_view_all('tags$li(class="tab col s3", tags$a(href="#test1", Test 1))',
+                      '(?<=[\\(,])[[:alnum:]\\s]+(?=[,\\)])')
+
+txt <- 'tags$li(class="tab col s3", tags$a(href="#test1", Test 1))'
+
+add_charQuotation <- function(txt){
+  txt_extracted <- unlist(stringr::str_extract_all(txt, '(?<=[\\(,])[[:alnum:]\\s]+(?=[,\\)])'))
+  txt2bReplaced <- paste0("\"", txt_extracted,"\"")
+  # stringr::str_replace_all(
+  #   txt,
+  #   paste0('(?<=[\\(,])(', txt_extracted,')(?=[,\\)])'),
+  #   txt2bReplaced
+  # )
+  newTxt <- vector("character", length(txt))
+  for(i in seq_along(txt)){
+    purrr::map_chr(
+      seq_along(txt_extracted),
+      ~stringr::str_replace(
+        txt[[i]],
+        paste0('(?<=[\\(,])(', txt_extracted[[.x]],')(?=[,\\)])'),
+        txt2bReplaced[[.x]])
+    ) %>%
+      paste0(collapse="") -> newTxt[[i]]
+    
+  }
+  return(newTxt)
+}
+
+```
+
+
+```{r}
+seq_along(txt_extracted),
+      ~stringr::str_replace(
+        txt[[i]],
+        paste0('(?<=[\\(,])(', txt_extracted[[.x]],')(?=[,\\)])'),
+        txt2bReplaced[[.x]])
+```
+
+
+
+```{r}
+txt <- tabs_template
+
+add_charQuotation <- function(txt){
+  txt_extracted <- unlist(stringr::str_extract_all(txt, '(?<=[\\(,])[[:alnum:]\\s]+(?=[,\\)])'))
+  txt2bReplaced <- paste0("\"", txt_extracted,"\"")
+  
+  for(i in seq_along(txt_extracted)){
+    stringr::str_replace_all(
+      txt,
+      pattern = paste0('(?<=[\\(,])(', txt_extracted[[i]] ,')(?=[,\\)])'),
+      txt2bReplaced[[i]]
+    ) -> txt
+  }
+  return(txt)
+}
+
+  
+txt
+```
+
+
+```{r}
+tabs_template <- 
+'
+
+
+ tags$div(class="row", 
+    tags$div(class="col s12", 
+      tags$ul(class="tabs", 
+        tags$li(class="tab col s3", tags$a(href="#test1", Test 1))
+        tags$li(class="tab col s3", tags$a(class="active", href="#test2", Test 2))
+        tags$li(class="tab col s3 disabled", tags$a(href="#test3", Disabled Tab))
+        tags$li(class="tab col s3", tags$a(href="#test4", Test 4))
+      )
+    )
+    tags$div(id="test1", class="col s12", Test 1)
+    tags$div(id="test2", class="col s12", Test 2)
+    tags$div(id="test3", class="col s12", Test 3)
+    tags$div(id="test4", class="col s12", Test 4)
+  )
+
+
+'
+
+```
+
+```{r}
+convertHTML2RTags <- function(string){
+  require(dplyr)
+  string %>%
+    stringr::str_replace_all("<(?!/)", "tags$") %>%
+    stringr::str_replace_all("</[a-z]+>", ")") %>%
+    stringr::str_replace_all('(?<=tags\\$[a-z]{1,10})\\s', "(") %>%
+    stringr::str_replace_all('(?<=\\"[:alnum:]{1,15}\\")[\\s]+(?=[:alpha:])', ", ") %>%
+    stringr::str_replace_all(">", ", ") %>%
+    add_charQuotation() -> output 
+  output %>% clipr::write_clip()
+  invisible(output)
+}
+
+```
+
+```{r}
+
+
+
+ tags$div(class="row", 
+    tags$div(class="col s12", 
+      tags$ul(class="tabs", 
+        tags$li(class="tab col s3", tags$a(href="#test1"," Test 1")),
+        tags$li(class="tab col s3", tags$a(class="active", href="#test2"," Test 2")),
+        tags$li(class="tab col s3 disabled", tags$a(href="#test3"," Disabled Tab")),
+        tags$li(class="tab col s3", tags$a(href="#test4"," Test 4"))
+      )
+    ),
+    tags$div(id="test1", class="col s12"," Test 1"),
+    tags$div(id="test2", class="col s12"," Test 2"),
+    tags$div(id="test3", class="col s12"," Test 3"),
+    tags$div(id="test4", class="col s12"," Test 4")
+  )
+
+
+
+```
+
+```{r}
+
+
+
+ tags$div(class="row", 
+    tags$div(class="col s12", 
+      tags$ul(class="tabs", 
+        tags$li(class="tab col s3", tags$a(href="#test1", Test 1)),
+        tags$li(class="tab col s3", tags$a(class="active", href="#test2", Test 2)),
+        tags$li(class="tab col s3 disabled", tags$a(href="#test3", Disabled Tab)),
+        tags$li(class="tab col s3", tags$a(href="#test4", Test 4))
+      )
+    )
+    tags$div(id="test1", class="col s12", Test 1)
+    tags$div(id="test2", class="col s12", Test 2)
+    tags$div(id="test3", class="col s12", Test 3)
+    tags$div(id="test4", class="col s12", Test 4)
+  )
+
+
+
+```
+
+```{r tabs_prototype_js}
+tabs_prototype_js <- 
+'
+var el_tabs = document.querySelector(".tabs")
+var instance_tabs = M.Tabs.init(el_tabs);'
+```
+
+
+var elems = document.querySelectorAll('.sidenav');
+var instances = M.Sidenav.init(elems, options);
+
+```{r DocumentReadyContent, drake=F}
+DocumentReadyContent <- function(...){
+  argList <- list(...)
+  # if(!exists(".documentReady", envir = .GlobalEnv)) .GlobalEnv$.documentReady <- list()
+  # append(.GlobalEnv$.documentReady, argList) -> .GlobalEnv$.documentReady
+  do.call(c, argList)
+}
+```
+
+```{r documentReadyContent, drake=F}
+documentReadyContent <-  DocumentReadyContent(
+  "var instance = M.Tabs.init();",
+  "var elems = document.querySelectorAll('.sidenav');
+var instances = M.Sidenav.init(elems);"
+)
+```
+
+
+```{r documentReadyJS}
+documentReadyJS <- 
+  htmltools::tags$script(
+    paste0(
+      c("document.addEventListener('DOMContentLoaded', function() {\n",
+      tabs_prototype_js,
+      "\n});"), collapse = "\n")
+  )
+
+```
+
+
+#### Subcat info on bottom
+
+```{r}
+
+```
+
+#### bodyTags
+
+```{r bodyTags}
+bodyTags <- {
+  htmltools::tagList(
+    # navbar_on_top_prototype,
+    tabs_prototype
+  )
+}
+```
+
+
+
+## HTML Structure
+
+```{r html_placeholder}
+html_placeholder <- tags$html(
+  tags$head(
+    do.call(htmltools::tagList, headTags),
+    tags$meta(
+      name="viewport",
+      content="width=device-width, initial-scale=1.0"
+    )
+  ),
+  tags$body(
+    do.call(htmltools::tagList, bodyTags),
+    documentReadyJS
+  )
+)
+```
+
+### Head Tags
+
+```{r headTags}
+headTags <- {
+  list(
+    htmltools::tags$link(
+      href="https://fonts.googleapis.com/icon?family=Material+Icons",
+      rel="stylesheet"
+    )
+  )
+}
+```
+
+## Dependencies (Optional)
+
+Materialized framework{-}
+
+```
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
+```
+
+### Define dependency
+
+```{r dependency_generator}
+dependency_generator <- function() {
+  mtl_cdn <- "https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/"
+  mtl_css <- "css/materialize.min.css"
+  mtl_js <- "js/materialize.min.js"
+  
+  htmltools::htmlDependency(
+    name = "mtl",
+    version = "1.0",
+    src = c(href = mtl_cdn),
+    stylesheet = mtl_css,
+    script = mtl_js
+  )
+}
+```
+
+
+### Attach dependency
+
+
+```{r html_complete}
+html_complete <- 
+  htmltools::tagList(
+    html_placeholder,
+    dependency_generator()
+  )
+```
+
+
+```{r}
+htmltools::browsable(
+  html_complete
+  )
+```
+
+
+## Save
+
+
+```{r save_html}
+htmltools::save_html(html_complete,
+                     file="index.html")
+browseURL("index.html")
+```
+
