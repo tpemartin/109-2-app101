@@ -199,4 +199,4 @@ htmltools::save_html(
 )
 ```
 
-  * **file** can not be in the same folder of the source Rmd file; it will create non-stop nested libdir. 
+
