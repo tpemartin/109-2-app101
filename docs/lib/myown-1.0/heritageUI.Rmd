@@ -55,7 +55,7 @@ tabs_prototype <-
  tags$div(class="row", 
     tags$div(class="col s12", 
       tags$ul(class="tabs", 
-        tags$li(class="tab col s3", tags$a(href="#test1"," Test 1")),
+        tags$li(class="tab col s3", tags$a(href="#test1"," 地區")),
         tags$li(class="tab col s3", tags$a(class="active", href="#test2"," Test 2")),
         tags$li(class="tab col s3 disabled", tags$a(href="#test3"," Disabled Tab")),
         tags$li(class="tab col s3", tags$a(href="#test4"," Test 4"))
@@ -161,7 +161,7 @@ myDependency <- htmltools::htmlDependency(
   src=c(filepath=.root()),
   stylesheet = "css/mystyle.css",
   script = "js/mydesign.js",
-  head = '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+  head = '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+TC">
 '
 )
 ```
@@ -199,4 +199,4 @@ htmltools::save_html(
 )
 ```
 
-
+  * **file** can not be in the same folder of the source Rmd file; it will create non-stop nested libdir. 
