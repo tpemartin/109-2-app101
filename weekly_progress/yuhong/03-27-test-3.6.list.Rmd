@@ -1,0 +1,229 @@
+---
+title: "03-27-test-3.6.list"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+library(lubridate) #4.0.0才可以用
+
+# Date/Time class
+purchasingTime <- 
+  ymd_hms("2020-03-31T13:40:55Z")
+
+# character
+location <- "一芳"
+item <- "水果茶"
+
+# numeric
+quantity <- 2
+
+mingsPurchase <-
+  list(
+    purchasingTime, 
+    location, 
+    quantity, 
+    item
+  )
+print(mingsPurchase)
+```
+
+```{r}
+mingsPurchase2 <-
+  list(
+    time = purchasingTime,
+    'location' = location,
+    "quantity" = quantity,
+    `item name` = item
+  )
+print(mingsPurchase2)
+```
+
+```{r}
+#Atomic vectors元素也可命名
+heights = c(
+  mary=162,
+  john=177,
+  steve=180
+)
+```
+
+```{r}
+# list 中每個元素值也可以是vector形式（atomic vector 或 non-atomic vector, 如list, 均可以）
+
+explist <- 
+  list(
+    c(2,30,58),
+    list("Lulu",23,"girl"),
+    TRUE
+  )
+explist
+
+# c 堆疊則自動合併
+
+expc <-
+  c(
+    c(2,3),
+    c(8,9)
+  )
+expc
+```
+
+```{r}
+# list 豐富結構
+## 「**2杯**」「**水果茶**」
+item1 <- list(
+  quantity=2,
+  `item name`="水果茶"
+)
+## 「**1杯**」「**日月紅茶**」
+item2 <- list(
+  quantity=1,
+  `item name`="日月紅茶"
+)
+
+mingsPurchase3 <-
+  list(
+    time = purchasingTime,
+    location = location, # = 就是 <-
+    items=list(
+      item1,
+      item2
+    )
+  )
+
+print(mingsPurchase3)
+```
+
+```{r}
+#實際運用 Case1
+student1 <-
+  list(
+    name = character(), #到時候該放 character
+    id = character(),
+    gmail = character(),
+    googleClassroom =
+      list(
+        displayName = character()
+      ),
+    github =
+      list(
+        username = character(),
+        repoUrl = character()
+      ),
+    homeworks = list(), #到時候該放 list
+    exams = list(),
+    list()
+  )
+
+names(student1) # 每個元素名稱
+length(student1) # 元素個數
+```
+
+```{r}
+str(student1, 1) # 第一層基本元素架構
+str(student1, 2) # 即到第二層
+```
+
+```{r}
+#丟一筆資料
+library(lubridate)
+hw1 <- list(
+  date=ymd("2020-10-21"),
+  grade=10
+)
+exam1 <- list(
+  date=ymd("2020-10-28"),
+  grade=50
+)
+student1 <-
+  list(
+    name = "Martin",
+    id = "007",
+    gmail = "mt@gm.ntpu.edu.tw",
+    googleClassroom =
+      list(
+        displayName = "MT L"
+      ),
+    github =
+      list(
+        username = "tpemartin",
+        repoUrl = "https://github.com/tpemartin/109-1-inclass-practice"
+      ),
+    homeworks = list(
+      hw1
+    ),
+    exams = list(
+      exam1
+    ),
+    list()
+  )
+
+str(student1, 2)
+```
+
+```{r}
+#實際運用 Case2
+categoryTemplate = 
+  list(
+    categoryName=character(),
+    items = list(
+    )
+  )
+
+saladCat <-
+  list(
+    categoryName = "沙拉套餐",
+    items = list(
+      list(
+        "板煎雞腿排經典凱薩沙拉",
+           246.5),
+      list(
+        "炙燒鴨胸佐胡麻沙拉",
+           246.5),
+      list(
+        "煙燻鮭魚佐酒醋沙拉",
+           246.5)
+    )
+  )
+print(saladCat)
+```
+
+```{r}
+# 轉Json
+library(jsonlite) # 不少同學這行會有Error，還記得如何排除嗎？
+toJSON(mingsPurchase3)
+```
+
+```{r}
+#物件儲存，直接在 global environment 出現不重跑
+save(mingsPurchase3,saladCat, file="0327-list-Data.Rda")
+
+#下次取回，或點兩下
+load("0327-list-Data.Rda")
+```
+
+
