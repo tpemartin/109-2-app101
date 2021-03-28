@@ -9,8 +9,9 @@ library(dplyr)
 library(htmltools)
 library(econR)
 web <- Web()
-.root <- rprojroot::is_rstudio_project$make_fix_file()
 ```
+
+  * If you don't see `web` object, please update your **econR** package via `remotes::install_github("tpemartin/econR", force=T)`.
 
 ### Body Tags
 
@@ -22,8 +23,6 @@ magick::image_read("https://i.pinimg.com/564x/3d/b4/07/3db407c7a392fc1bfd96524b6
 
   * Tabs on top 
   
-  * Subcat info on bottom
-
 
 #### Tabs on top
 
@@ -48,14 +47,16 @@ tabs_prototype <-
 ')
 ```
 
+```{r}
+convertHTML2RTags(tabs_prototype)
+```
 
+```{r}
 
-```{r tabs_prototype}
-tabs_prototype <- 
  tags$div(class="row", 
     tags$div(class="col s12", 
       tags$ul(class="tabs", 
-        tags$li(class="tab col s3", tags$a(href="#test1"," 地區")),
+        tags$li(class="tab col s3", tags$a(href="#test1"," Test 1")),
         tags$li(class="tab col s3", tags$a(class="active", href="#test2"," Test 2")),
         tags$li(class="tab col s3 disabled", tags$a(href="#test3"," Disabled Tab")),
         tags$li(class="tab col s3", tags$a(href="#test4"," Test 4"))
@@ -70,11 +71,120 @@ tabs_prototype <-
 ```
 
 
-#### Subcat info on bottom
-
-```{r}
+```{r tabs_prototype}
+tabs_prototype <- 
+tags$div(class="container",
+ tags$div(class="row", 
+    tags$div(class="col s12", 
+      tags$ul(class="tabs", 
+        tags$li(class="tab col s3", tags$a(href="#test1"," 地區")),
+        tags$li(class="tab col s3", tags$a(class="active", href="#test2"," Test 2")),
+        tags$li(class="tab col s3 disabled", tags$a(href="#test3"," Disabled Tab")),
+        tags$li(class="tab col s3", tags$a(href="#test4"," Test 4"))
+      )
+    ),
+    tags$div(id="test1", class="col s12"," Test 1"),
+    tags$div(id="test2", class="col s12"," Test 2"),
+    tags$div(id="test3", class="col s12"," Test 3"),
+    tags$div(id="test4", class="col s12"," Test 4")
+  ))
 
 ```
+
+#### footer
+
+```{r footer_proto}
+footer_proto <-htmltools::HTML( '  <footer class="page-footer">
+          <div class="container">
+            <div class="row">
+              <div class="col l6 s12">
+                <h5 class="white-text">Footer Content</h5>
+                <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+              </div>
+              <div class="col l4 offset-l2 s12">
+                <h5 class="white-text">Links</h5>
+                <ul>
+                  <li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+                  <li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+                  <li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
+                  <li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+            © 2014 Copyright Text
+            <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+            </div>
+          </div>
+        </footer>')
+
+```
+
+```{r}
+drake$loadTarget$footer_proto()
+
+as.character(footer_proto) %>%
+  convertHTML2RTags() # will translate HTML to R tag codes which will be written to clipboard for pasting.
+```
+
+```{r footer}
+footer <-   tags$footer(class="page-footer", 
+          tags$div(class="container", 
+            tags$div(class="row", 
+              tags$div(class="col l6 s12", 
+                tags$h5(class="white-text"," Footer Content"),
+                tags$p(class="grey-text text-lighten-4", "You can use rows and columns here to organize your footer content.")
+              ),
+              tags$div(class="col l4 offset-l2 s12", 
+                tags$h5(class="white-text"," Links"),
+                tags$ul( 
+                  tags$li( tags$a(class="grey-text text-lighten-3", href="#!"," Link 1")),
+                  tags$li( tags$a(class="grey-text text-lighten-3", href="#!"," Link 2")),
+                  tags$li( tags$a(class="grey-text text-lighten-3", href="#!"," Link 3")),
+                  tags$li( tags$a(class="grey-text text-lighten-3", href="#!"," Link 4"))
+                )
+              )
+            )
+          ),
+          tags$div(class="footer-copyright", 
+            tags$div(class="container", 
+            "© 2014 Copyright Text",
+            tags$a(class="grey-text text-lighten-4 right", href="#!"," More Links")
+            )
+          )
+        )
+```
+
+```{r footer, drake=F}
+footer <-   tags$footer(class="page-footer", 
+          tags$div(class="container", 
+            tags$div(class="row", 
+              tags$div(class="col l6 s12", 
+                tags$h5(class="white-text"," Footer Content"),
+                tags$p(class="grey-text text-lighten-4", "You can use rows and columns here to organize your footer content.")
+              ),
+              tags$div(class="col l4 offset-l2 s12", 
+                tags$h5(class="white-text"," Links"),
+                tags$ul(
+                  tags$li(tags$a(class="grey-text text-lighten-3", href="#!"," Link 1")),
+                  tags$li(tags$a(class="grey-text text-lighten-3", href="#!"," Link 2")),
+                  tags$li(tags$a(class="grey-text text-lighten-3", href="#!"," Link 3")),
+                  tags$li(tags$a(class="grey-text text-lighten-3", href="#!"," Link 4"))
+                )
+              )
+            )
+          ),
+          tags$div(class="footer-copyright", 
+            tags$div(class="container", 
+           " © 2014 Copyright Text",
+            tags$a(class="grey-text text-lighten-4 right", href="#!"," More Links")
+            )
+          )
+        )
+```
+
 
 #### bodyTags
 
@@ -82,7 +192,8 @@ tabs_prototype <-
 bodyTags <- {
   htmltools::tagList(
     # navbar_on_top_prototype,
-    tabs_prototype
+    tabs_prototype,
+    footer
   )
 }
 ```
@@ -106,31 +217,11 @@ html_placeholder <- tags$html(
 )
 ```
 
-## JS document loaded
-
-```{r tabs_prototype_js, drake=F}
-tabs_prototype_js <- 
-'
-var el_tabs = document.querySelector(".tabs")
-var instance_tabs = M.Tabs.init(el_tabs);'
-```
-
-```{r documentReadyJS, drake=F}
-documentReadyJS <- 
-  htmltools::tags$script(
-    paste0(
-      c("document.addEventListener('DOMContentLoaded', function() {\n",
-      tabs_prototype_js,
-      "\n});"), collapse = "\n")
-  )
-
-```
-
 ### Head Tags
 
 ```{r headTags}
 headTags <- {
-  list(
+  htmltools::tagList(
     htmltools::tags$link(
       href="https://fonts.googleapis.com/icon?family=Material+Icons",
       rel="stylesheet"
@@ -139,7 +230,7 @@ headTags <- {
 }
 ```
 
-## Dependencies (Optional)
+## Dependencies
 
 Materialized framework{-}
 
@@ -151,6 +242,11 @@ Materialized framework{-}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
             
 ```
+
+```{r}
+web$htmlDependencies$materialise
+```
+
 
 #### Define dependency
 
@@ -166,6 +262,7 @@ myDependency <- htmltools::htmlDependency(
 )
 ```
 
+
 #### Attach dependency
 
 
@@ -174,6 +271,7 @@ html_complete <-
   htmltools::tagList(
     html_placeholder,
     web$htmlDependencies$materialise(),
+    web$htmlDependencies$jquery(),
     myDependency
   )
 ```
@@ -189,10 +287,12 @@ htmltools::browsable(
 ## Save
 
 ```{r save_html}
+drake::file_in("css/mystyle.css")
+drake::file_in("js/mydesign.js")
 htmltools::save_html(
   html_complete, 
   file = file.path(
-    "/Users/martinl/Github/109-2-app101/docs",
+    web$output_path(),
     "index.html"
   ),
   libdir="lib"
