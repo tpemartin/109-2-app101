@@ -1,0 +1,41 @@
+---
+title: "互動式經濟資料視覺化"
+output: output_format
+drake_cache: ".heritageMap"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r makecondition}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(leaflet)
+heritageData <- jsonlite::fromJSON("https://raw.githubusercontent.com/tpemartin/109-2-app101/main/data/heritage.json")
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+```
+
+
+```{r}
+names(heritageData)
+heritageData[c("longitude","latitude")]
+```
+
+
+```{r widget_heritage}
+widget_heritage <- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(
+    data = heritageData %>%
+      select(caseName, longitude, latitude) %>% na.omit(),
+    lng= ~longitude, 
+    lat= ~latitude, 
+    popup= ~caseName)
+```
+
+```{r save_widget_heritage}
+save(widget_heritage, file=file.path(.root(),"widget_heritage.Rda"))
+```
+

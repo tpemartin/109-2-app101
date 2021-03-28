@@ -17,7 +17,7 @@ library(dplyr)
 library(htmltools)
 library(econR)
 .GlobalEnv$web <- econR::Web()
-web$foldername="docs2" # output folder name
+web$foldername="docs" # output folder name
 web$html_filename <- "index.html"
 
 ```
@@ -31,9 +31,8 @@ web$html_filename <- "index.html"
   * Label widget loading chunk `makecondition_xxx`. 
   
 ```{r makecondition_widgets}
-# Demo: htmlwidget embed
-if(!file.exists("plt_gg_bikeRouteStm.Rda")) xfun::download_file("https://www.dropbox.com/s/ify9h26c172t7t5/plt_gg_bikeRouteStm.Rda?dl=1", mode="wb")
-load("plt_gg_bikeRouteStm.Rda", envir = .GlobalEnv)
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
 
 ```
 
@@ -45,14 +44,12 @@ bodyTags <- {
   htmltools::tagList(
     tags$main(
       tags$h5(class="center-align",
-      "〖Title〗")
+      "臺灣古蹟")
     ),
     tags$div(class="container",
              tags$div(class="row",
-                      tags$div(class="col s3",
-                        tags$h5(class="center-align", "〖sidebar panel〗")),
-                      tags$div(class="col s9",
-                               plt_gg_bikeRouteStm)
+                      tags$div(class="col s12",
+                               widget_heritage)
                       ))
   )
 }
@@ -127,7 +124,7 @@ html_complete <-
   htmltools::tagList(
     html_placeholder,
     web$htmlDependencies$materialise(),
-    local_jquery, 
+    web$htmlDependencies$jquery(),# local_jquery, 
     myDependency
   )
 ```
