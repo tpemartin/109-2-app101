@@ -13,22 +13,36 @@ knitr::opts_chunk$set(echo = TRUE)
 .root <- rprojroot::is_rstudio_project$make_fix_file()
 ```
 
-```{r}
+```{r}  #r裡面一群東西只會用c或list
 install.packages(c("rprojroot", "devtools", "rmarkdown", "drake"))
-remotes::install_github("tpemartin/econR", force=T)
+remotes::install_github("tpemartin/econR", force=T)  #python 寫法
 remotes::install_github("tpemartin/rmd2drake", force=T)
 ```
+```{r}   #r寫法
+library(remotes)
+install_github("tpemartin/econR", force=T)
+```
+
+```{r}  #dl就是download, =0 代表不下載前往, =1則直接下載
+library(jsonlite)
+heritage_data <- fromJSON("https://www.dropbox.com/s/jdnmlckl18n8ayc/Cornwell%20and%20Rupert.csv?dl=0")
+```
+
 
 ## Codes
 
 ### read data
 
   * https://raw.githubusercontent.com/tpemartin/109-2-app101/main/data/heritage.json
+  * jsonlite
 
 #### From URL
 
 ```{r}
-heritage_data <- 
+heritage_data <- fromJSON("https://www.dropbox.com/s/jdnmlckl18n8ayc/Cornwell%20and%20Rupert.csv?dl=0")
+
+library(readr)
+
 ```
 
 #### From local
