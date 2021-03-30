@@ -35,6 +35,11 @@ widget_heritage <- leaflet() %>%
     popup= ~caseName)
 ```
 
+```{r}
+leaflet::setView(widget_heritage)
+```
+
+
 ```{r save_widget_heritage}
 save(widget_heritage, file=file.path(.root(),"widget_heritage.Rda"))
 ```

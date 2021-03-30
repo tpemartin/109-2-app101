@@ -1,6 +1,11 @@
 body {
   font-family: "Noto Serif TC", sans-serif;
 }
+.page-content {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
 /*
 body {
     display: flex;

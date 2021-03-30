@@ -1,5 +1,5 @@
 ---
-drake_cache: ".myHtml"
+drake_cache: ".UI"
 ---
 
 ## Setup environment
@@ -19,7 +19,71 @@ library(econR)
 .GlobalEnv$web <- econR::Web()
 web$foldername="docs" # output folder name
 web$html_filename <- "index.html"
+xfun::download_file(drake::file_in("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1"), mode="wb")
+load("heritage.Rdata")
+```
 
+### side nav
+
+```{html}
+<nav> <!-- navbar content here  --> </nav>
+
+  <ul id="slide-out" class="sidenav">
+    <li><div class="user-view">
+      <div class="background">
+        <img src="images/office.jpg">
+      </div>
+      <a href="#user"><img class="circle" src="images/yuna.jpg"></a>
+      <a href="#name"><span class="white-text name">John Doe</span></a>
+      <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
+    </div></li>
+    <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+    <li><a href="#!">Second Link</a></li>
+    <li><div class="divider"></div></li>
+    <li><a class="subheader">Subheader</a></li>
+    <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+  </ul>
+  <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        
+```
+
+```{r navbarContent}
+navbarContent <- tags$nav("臺灣古蹟")
+```
+
+
+```{r slide_out}
+slide_out <- tags$ul(id="slide-out", class="sidenav", 
+    tags$li( tags$div(class="user-view", 
+      tags$div(class="background", 
+        tags$img(src=heritageData$representImage[[1]])
+      ),
+      tags$a(href="#user", tags$img(class="circle", src=heritageData$representImage[[1]])),
+      tags$a(href="#name", tags$span(class="white-text name"," John Doe")),
+      tags$a(href="#email", tags$span(class="white-text email", "jdandturk@gmail.com")))
+    ),
+    tags$li( tags$a(href="#!", tags$i(class="material-icons"," cloud"), "First Link With Icon")),
+    tags$li( tags$a(href="#!"," Second Link")),
+    tags$li( tags$div(class="divider"," ")),
+    tags$li( tags$a(class="subheader"," Subheader")),
+    tags$li( tags$a(class="waves-effect", href="#!"," Third Link With Waves"))
+  )
+```
+
+
+```{r slide_out_dataTarget}
+slide_out_dataTarget <- tags$a(href="#", `data-target`="slide-out", class="sidenav-trigger", tags$i(class="material-icons"," menu"))
+        
+```
+
+ data-target should have , in front; and change to `data-target`
+
+```{r sideNav}
+sideNav <- tagList(
+  navbarContent,
+  slide_out,
+  slide_out_dataTarget
+)
 ```
 
 ### Widgets
@@ -42,14 +106,16 @@ load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
 ```{r bodyTags}
 bodyTags <- {
   htmltools::tagList(
-    tags$main(
-      tags$h5(class="center-align",
-      "臺灣古蹟")
-    ),
+    sideNav,
+    # tags$main(
+    #   tags$h5(class="center-align",
+    #   "臺灣古蹟")
+    # ),
     tags$div(class="container",
              tags$div(class="row",
-                      tags$div(class="col s12",
-                               widget_heritage)
+                      tags$div(class="col s12 ",
+                               widget_heritage
+                               )
                       ))
   )
 }
@@ -105,7 +171,7 @@ myDependency <- htmltools::htmlDependency(
   * If src is in other path, use `web$config_cssJsPath("your_path")` in **makecondition** -- no need to change `web$cssJsPath` (it will change accordingly).
 
 
-```{r local_jquery}
+```{r local_jquery, drake=F}
 local_jquery <- 
   htmltools::htmlDependency(
     name="jquery",
