@@ -25,28 +25,6 @@ load("heritage.Rdata")
 
 ### side nav
 
-```{html}
-<nav> <!-- navbar content here  --> </nav>
-
-  <ul id="slide-out" class="sidenav">
-    <li><div class="user-view">
-      <div class="background">
-        <img src="images/office.jpg">
-      </div>
-      <a href="#user"><img class="circle" src="images/yuna.jpg"></a>
-      <a href="#name"><span class="white-text name">John Doe</span></a>
-      <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
-    </div></li>
-    <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-    <li><a href="#!">Second Link</a></li>
-    <li><div class="divider"></div></li>
-    <li><a class="subheader">Subheader</a></li>
-    <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
-  </ul>
-  <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-        
-```
-
 ```{r navbarContent}
 navbarContent <- tags$nav("臺灣古蹟")
 ```
@@ -59,14 +37,10 @@ slide_out <- tags$ul(id="slide-out", class="sidenav",
         tags$img(src=heritageData$representImage[[1]])
       ),
       tags$a(href="#user", tags$img(class="circle", src=heritageData$representImage[[1]])),
-      tags$a(href="#name", tags$span(class="white-text name"," John Doe")),
-      tags$a(href="#email", tags$span(class="white-text email", "jdandturk@gmail.com")))
+      tags$a(href="#name", tags$span(class="white-text name",heritageData$caseName[[1]])))
     ),
-    tags$li( tags$a(href="#!", tags$i(class="material-icons"," cloud"), "First Link With Icon")),
-    tags$li( tags$a(href="#!"," Second Link")),
-    tags$li( tags$div(class="divider"," ")),
-    tags$li( tags$a(class="subheader"," Subheader")),
-    tags$li( tags$a(class="waves-effect", href="#!"," Third Link With Waves"))
+    tags$li( tags$a(href="#!", tags$i(class="material-icons"," info_outline"), 
+                    tags$p(heritageData$pastHistory[[1]])))
   )
 ```
 
@@ -97,7 +71,9 @@ sideNav <- tagList(
 ```{r makecondition_widgets}
 .root <- rprojroot::is_rstudio_project$make_fix_file()
 load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
-
+save_html(
+  widget_heritage, file=file.path(dirname(web$output_filepath()),"widget_heritage.html")
+)
 ```
 
 
@@ -114,7 +90,14 @@ bodyTags <- {
     tags$div(class="container",
              tags$div(class="row",
                       tags$div(class="col s12 ",
-                               widget_heritage
+                               tags$div(class="video-container",
+                                       tags$iframe(
+                                         src="widget_heritage.html",
+                                         height=widget_heritage$sizingPolicy$defaultHeight,
+                                         weight=widget_heritage$sizingPolicy$defaultWidth,
+                                          frameborder="0", allowfullscreen=NA
+                                       ))
+                               # widget_heritage
                                )
                       ))
   )
