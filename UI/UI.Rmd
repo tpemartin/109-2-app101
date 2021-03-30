@@ -26,7 +26,9 @@ load("heritage.Rdata")
 ### side nav
 
 ```{r navbarContent}
-navbarContent <- tags$nav("臺灣古蹟")
+navbarContent <- tags$nav(
+  tags$div(class="container valign-wrapper",
+           tags$h5("臺灣古蹟")))
 ```
 
 
@@ -83,10 +85,6 @@ save_html(
 bodyTags <- {
   htmltools::tagList(
     sideNav,
-    # tags$main(
-    #   tags$h5(class="center-align",
-    #   "臺灣古蹟")
-    # ),
     tags$div(class="container",
              tags$div(class="row",
                       tags$div(class="col s12 ",
@@ -97,7 +95,6 @@ bodyTags <- {
                                          weight=widget_heritage$sizingPolicy$defaultWidth,
                                           frameborder="0", allowfullscreen=NA
                                        ))
-                               # widget_heritage
                                )
                       ))
   )
