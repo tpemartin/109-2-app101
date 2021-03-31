@@ -1,0 +1,25 @@
+body {
+  font-family: "Noto Serif TC", sans-serif;
+}
+.page-content {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+.image-icon {
+	border: white;
+	border-style: solid;
+	border-width: 1px;
+}
+/*
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
+
+*/

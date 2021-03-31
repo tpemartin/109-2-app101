@@ -1,0 +1,226 @@
+---
+drake_cache: ".sidenav"
+---
+
+## Setup environment
+
+  * Addins: Initiate drake -> `drake$source_plan()` -> `drake$makePlan()`.
+  
+  * `web$browse()` to see the output. 
+  
+  * If any change to Rmd, save the Rmd, then `drake$update()` -> `web$browser()` to see the change.
+  
+  * Your html output file is in `web$output_filepath()`.
+
+```{r makecondition}
+library(dplyr)
+library(htmltools)
+library(econR)
+.GlobalEnv$web <- econR::Web()
+web$foldername="docs" # output folder name
+web$html_filename <- "sidenave.html"
+xfun::download_file(drake::file_in("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1"), mode="wb")
+load("heritage.Rdata")
+```
+
+```{r}
+names(heritageData)
+browseURL(heritageData$caseUrl[[1]])
+browseURL(heritageData$representImage[[1]])
+```
+
+### side nav
+
+```{html}
+<nav> <!-- navbar content here  --> </nav>
+
+  <ul id="slide-out" class="sidenav">
+    <li><div class="user-view">
+      <div class="background">
+        <img src="images/office.jpg">
+      </div>
+      <a href="#user"><img class="circle" src="images/yuna.jpg"></a>
+      <a href="#name"><span class="white-text name">John Doe</span></a>
+      <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
+    </div></li>
+    <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+    <li><a href="#!">Second Link</a></li>
+    <li><div class="divider"></div></li>
+    <li><a class="subheader">Subheader</a></li>
+    <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+  </ul>
+  <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        
+```
+
+```{r navbarContent}
+navbarContent <- tags$nav("Navbar content")
+```
+
+
+```{r slide_out}
+slide_out <- tags$ul(id="slide-out", class="sidenav", 
+    tags$li( tags$div(class="user-view", 
+      tags$div(class="background", 
+        tags$img(src=heritageData$representImage[[1]])
+      ),
+      tags$a(href="#user", tags$img(class="circle", src=heritageData$representImage[[1]])),
+      tags$a(href="#name", tags$span(class="white-text name"," John Doe")),
+      tags$a(href="#email", tags$span(class="white-text email", "jdandturk@gmail.com")))
+    ),
+    tags$li( tags$a(href="#!", tags$i(class="material-icons"," cloud"), "First Link With Icon")),
+    tags$li( tags$a(href="#!"," Second Link")),
+    tags$li( tags$div(class="divider"," ")),
+    tags$li( tags$a(class="subheader"," Subheader")),
+    tags$li( tags$a(class="waves-effect", href="#!"," Third Link With Waves"))
+  )
+```
+
+
+```{r slide_out_dataTarget}
+slide_out_dataTarget <- tags$a(href="#", `data-target`="slide-out", class="sidenav-trigger", tags$i(class="material-icons"," menu"))
+        
+```
+
+ data-target should have , in front; and change to `data-target`
+
+```{r sideNav}
+sideNav <- tagList(
+  navbarContent,
+  slide_out,
+  slide_out_dataTarget
+)
+```
+
+### Widgets
+
+  * Widgets can be designed in a separate file and saved in a Rdata for loading here.
+  
+  * While loading, make sure `envir = .GlobalEnv`.
+  
+  * Label widget loading chunk `makecondition_xxx`. 
+  
+```{r makecondition_widgets}
+# Demo: htmlwidget embed
+if(!file.exists("plt_gg_bikeRouteStm.Rda")) xfun::download_file("https://www.dropbox.com/s/ify9h26c172t7t5/plt_gg_bikeRouteStm.Rda?dl=1", mode="wb")
+load("plt_gg_bikeRouteStm.Rda", envir = .GlobalEnv)
+
+```
+
+
+### Body Tags
+
+```{r bodyTags}
+bodyTags <- {
+  htmltools::tagList(
+    sideNav,
+    tags$main(
+      tags$h5(class="center-align",
+      "〖Title〗")
+    ),
+    tags$div(class="container",
+             tags$div(class="row",
+                      tags$div(class="col s3",
+                        tags$h5(class="center-align", "〖sidebar panel〗")),
+                      tags$div(class="col s9",
+                               plt_gg_bikeRouteStm)
+                      ))
+  )
+}
+```
+
+
+## HTML Structure
+
+```{r html_placeholder}
+html_placeholder <- tags$html(
+  tags$head(
+    do.call(htmltools::tagList, headTags),
+    tags$meta(
+      name="viewport",
+      content="width=device-width, initial-scale=1.0"
+    )
+  ),
+  tags$body(
+    do.call(htmltools::tagList, bodyTags)
+  )
+)
+```
+
+## Dependencies
+
+### Head Tags
+
+```{r headTags}
+headTags <- {
+  htmltools::tagList(
+    htmltools::tags$link(
+      href="https://fonts.googleapis.com/icon?family=Material+Icons",
+      rel="stylesheet"
+    )
+  )
+}
+```
+
+### Define dependency
+
+```{r myDependency}
+myDependency <- htmltools::htmlDependency(
+  name="myown",
+  version="1.0",
+  src=c(filepath=web$cssJsPath),
+  stylesheet = "css/mystyle.css",
+  script = "js/mydesign.js",
+  head = '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+TC">
+'
+)
+```
+
+  * If src is in other path, use `web$config_cssJsPath("your_path")` in **makecondition** -- no need to change `web$cssJsPath` (it will change accordingly).
+
+
+```{r local_jquery}
+local_jquery <- 
+  htmltools::htmlDependency(
+    name="jquery",
+    version="3.5.1",
+    src=c(href = "lib/jquery-3.5.1"),
+    # to use the same library here must use href, not filepath; otherwise, the current jquery system will be removed.
+    script = c("jquery.min.js")
+  )
+```
+
+### Attach dependency
+
+
+```{r html_complete}
+html_complete <- 
+  htmltools::tagList(
+    html_placeholder,
+    web$htmlDependencies$materialise(),
+    local_jquery, 
+    myDependency
+  )
+```
+
+  * If not using jquery from htmlwidgets, replace `local_jquery` with `web$htmlDependencies$jquery()`
+
+
+## Save
+
+```{r save_html}
+htmltools::save_html(
+  html_complete, 
+  file = web$output_filepath(),
+  libdir="lib"
+)
+```
+
+## Browse
+
+```{r}
+web$browse()
+```
+
+
+
