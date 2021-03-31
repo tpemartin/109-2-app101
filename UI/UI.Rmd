@@ -31,6 +31,11 @@ navbarContent <- tags$nav(
            tags$h5("臺灣古蹟")))
 ```
 
+```{r googleSearch}
+searchContent <- URLencode(heritageData$caseName[[1]])
+googleSearch <- glue::glue('https://www.google.com/search?q={searchContent}&sxsrf=ALeKk01D05Oz12ZZcjb7vxeL2fV7sKa_mg:1617153946605&source=lnms&tbm=isch&sa=X&ved=2ahUKEwi6_6L0r9nvAhXIyYsBHcHzCQ4Q_AUoAnoECAEQBA&biw=1920&bih=981')
+googleSearch
+```
 
 ```{r slide_out}
 slide_out <- tags$ul(id="slide-out", class="sidenav", 
@@ -39,7 +44,10 @@ slide_out <- tags$ul(id="slide-out", class="sidenav",
         tags$img(src=heritageData$representImage[[1]])
       ),
       tags$a(href="#user", tags$img(class="circle image-icon", src=heritageData$representImage[[1]])),
-      tags$a(href="#name", tags$span(class="white-text name",heritageData$caseName[[1]])))
+      tags$a(href=googleSearch, target="_blank", #"#name", 
+             tags$span(class="white-text name",heritageData$caseName[[1]],
+             tags$i(class="material-icons img-icon red darken-2"," photo")))
+      )
     ),
     tags$li(
       tags$div(
