@@ -1,0 +1,89 @@
+---
+title: "App: 遊古尋蹟"
+output: html_document
+drake_cach: ".heritage"
+date: `r Sys.Date()`
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r makecondition, echo=FALSE, eval=TRUE}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+```
+
+```{r}
+install.packages(
+  c("rprojroot", "devtools", "rmarkdown", "drake")
+  ) # one input
+remotes::install_github("tpemartin/econR", force=T) # 2 inputs
+remotes::install_github("tpemartin/rmd2drake", force=T)
+```
+
+```{r}
+jsonlite::
+```
+
+
+```{r}
+library(remotes)
+install_github("tpemartin/econR", force=T)
+```
+
+## Codes
+
+### read data
+
+  * https://raw.githubusercontent.com/tpemartin/109-2-app101/main/data/heritage.json
+  
+  * jsonlite
+
+#### From URL
+
+```{r}
+heritage_data <- 
+```
+
+```{r}
+library(jsonlite)
+heritage_data <-fromJSON("https://raw.githubusercontent.com/tpemartin/109-2-app101/main/data/heritage.json")
+```
+
+
+```{r}
+library(readr)
+Cornwell_20and_20Rupert <- read_csv("https://www.dropbox.com/s/jdnmlckl18n8ayc/Cornwell%20and%20Rupert.csv?dl=1")
+
+```
+
+#### From local
+
+ * /Users/martinl/Github/109-2-app101/data/heritage.json
+ 
+```{r}
+heritage_data <- fromJSON("/Users/martinl/Github/109-2-app101/data/heritage.json")
+```
+
+### User data
+
+```{r}
+user_data <- list(
+  username = "",
+  last_login = "",
+  last_chosen_county = "花蓮縣",
+  visit_history = list(
+    checkins = list(
+      list(
+        location_gps = c(121, 24.3),
+        time=
+      )
+    )
+  )
+)
+
+user_data <- list(
+  
+)
+```
+
