@@ -6,6 +6,11 @@ body {
   min-height: 100vh;
   flex-direction: column;
 }
+.image-icon {
+	border: white;
+	border-style: solid;
+	border-width: 1px;
+}
 /*
 body {
     display: flex;

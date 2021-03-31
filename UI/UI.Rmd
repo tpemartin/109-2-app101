@@ -38,21 +38,25 @@ slide_out <- tags$ul(id="slide-out", class="sidenav",
       tags$div(class="background", 
         tags$img(src=heritageData$representImage[[1]])
       ),
-      tags$a(href="#user", tags$img(class="circle", src=heritageData$representImage[[1]])),
+      tags$a(href="#user", tags$img(class="circle image-icon", src=heritageData$representImage[[1]])),
       tags$a(href="#name", tags$span(class="white-text name",heritageData$caseName[[1]])))
     ),
-    tags$li( tags$a(href="#!", tags$i(class="material-icons"," info_outline"), 
-                    tags$p(heritageData$pastHistory[[1]])))
+    tags$li(
+      tags$div(heritageData$pastHistory[[1]])
+      #tags$a(href="#!", tags$i(class="material-icons"," info_outline"), 
+      #              tags$p(heritageData$pastHistory[[1]]))
+      )
   )
 ```
 
 
 ```{r slide_out_dataTarget}
-slide_out_dataTarget <- tags$a(href="#", `data-target`="slide-out", class="sidenav-trigger", tags$i(class="material-icons"," menu"))
-        
+slide_out_dataTarget <- tags$a(href="#", `data-target`="slide-out", class="sidenav-trigger",
+                               tags$div(style="margin: 5px",
+                                 tags$i(class="material-icons"," info_outline"))
+)
 ```
 
- data-target should have , in front; and change to `data-target`
 
 ```{r sideNav}
 sideNav <- tagList(
@@ -61,6 +65,7 @@ sideNav <- tagList(
   slide_out_dataTarget
 )
 ```
+
 
 ### Widgets
 
