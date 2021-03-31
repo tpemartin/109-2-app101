@@ -68,6 +68,22 @@ heritage_data <- fromJSON("/Users/martinl/Github/109-2-app101/data/heritage.json
 ### User data
 
 ```{r}
-user_data <- 
+user_data <- list(
+  username = "",
+  last_login = "",
+  last_chosen_county = "花蓮縣",
+  visit_history = list(
+    checkins = list(
+      list(
+        location_gps = c(121, 24.3),
+        time=
+      )
+    )
+  )
+)
+
+user_data <- list(
+  
+)
 ```
 
