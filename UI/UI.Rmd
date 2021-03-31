@@ -1,0 +1,213 @@
+---
+drake_cache: ".UI"
+---
+
+## Setup environment
+
+  * Addins: Initiate drake -> `drake$source_plan()` -> `drake$makePlan()`.
+  
+  * `web$browse()` to see the output. 
+  
+  * If any change to Rmd, save the Rmd, then `drake$update()` -> `web$browser()` to see the change.
+  
+  * Your html output file is in `web$output_filepath()`.
+
+```{r makecondition}
+library(dplyr)
+library(htmltools)
+library(econR)
+.GlobalEnv$web <- econR::Web()
+web$foldername="docs" # output folder name
+web$html_filename <- "index.html"
+xfun::download_file(drake::file_in("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1"), mode="wb")
+load("heritage.Rdata")
+```
+
+### side nav
+
+```{r navbarContent}
+navbarContent <- tags$nav(
+  tags$div(class="container valign-wrapper",
+           tags$h5("臺灣古蹟")))
+```
+
+```{r googleSearch}
+searchContent <- URLencode(heritageData$caseName[[1]])
+googleSearch <- glue::glue('https://www.google.com/search?q={searchContent}&sxsrf=ALeKk01D05Oz12ZZcjb7vxeL2fV7sKa_mg:1617153946605&source=lnms&tbm=isch&sa=X&ved=2ahUKEwi6_6L0r9nvAhXIyYsBHcHzCQ4Q_AUoAnoECAEQBA&biw=1920&bih=981')
+googleSearch
+```
+
+```{r slide_out}
+slide_out <- tags$ul(id="slide-out", class="sidenav", 
+    tags$li( tags$div(class="user-view", 
+      tags$div(class="background", 
+        tags$img(src=heritageData$representImage[[1]])
+      ),
+      tags$a(href="#user", tags$img(class="circle image-icon", src=heritageData$representImage[[1]])),
+      tags$a(href=googleSearch, target="_blank", #"#name", 
+             tags$span(class="white-text name",heritageData$caseName[[1]],
+             tags$i(class="material-icons img-icon red darken-2"," photo")))
+      )
+    ),
+    tags$li(
+      tags$div(
+        class="container",
+        heritageData$pastHistory[[1]])
+      #tags$a(href="#!", tags$i(class="material-icons"," info_outline"), 
+      #              tags$p(heritageData$pastHistory[[1]]))
+      )
+  )
+```
+
+
+```{r slide_out_dataTarget}
+slide_out_dataTarget <- tags$a(href="#", `data-target`="slide-out", class="sidenav-trigger",
+                               tags$div(style="margin: 5px",
+                                 tags$i(class="material-icons"," info_outline"))
+)
+```
+
+
+```{r sideNav}
+sideNav <- tagList(
+  navbarContent,
+  slide_out,
+  slide_out_dataTarget
+)
+```
+
+
+### Widgets
+
+  * Widgets can be designed in a separate file and saved in a Rdata for loading here.
+  
+  * While loading, make sure `envir = .GlobalEnv`.
+  
+  * Label widget loading chunk `makecondition_xxx`. 
+  
+```{r makecondition_widgets}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
+save_html(
+  widget_heritage, file=file.path(dirname(web$output_filepath()),"widget_heritage.html")
+)
+```
+
+
+### Body Tags
+
+```{r bodyTags}
+bodyTags <- {
+  htmltools::tagList(
+    sideNav,
+    tags$div(class="container",
+             tags$div(class="row",
+                      tags$div(class="col s12 ",
+                               tags$div(class="video-container",
+                                       tags$iframe(
+                                         src="widget_heritage.html",
+                                         height=widget_heritage$sizingPolicy$defaultHeight,
+                                         weight=widget_heritage$sizingPolicy$defaultWidth,
+                                          frameborder="0", allowfullscreen=NA
+                                       ))
+                               )
+                      ))
+  )
+}
+```
+
+
+## HTML Structure
+
+```{r html_placeholder}
+html_placeholder <- tags$html(
+  tags$head(
+    do.call(htmltools::tagList, headTags),
+    tags$meta(
+      name="viewport",
+      content="width=device-width, initial-scale=1.0"
+    )
+  ),
+  tags$body(
+    do.call(htmltools::tagList, bodyTags)
+  )
+)
+```
+
+## Dependencies
+
+### Head Tags
+
+```{r headTags}
+headTags <- {
+  htmltools::tagList(
+    htmltools::tags$link(
+      href="https://fonts.googleapis.com/icon?family=Material+Icons",
+      rel="stylesheet"
+    )
+  )
+}
+```
+
+### Define dependency
+
+```{r myDependency}
+myDependency <- htmltools::htmlDependency(
+  name="myown",
+  version="1.0",
+  src=c(filepath=web$cssJsPath),
+  stylesheet = "css/mystyle.css",
+  script = "js/mydesign.js",
+  head = '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+TC">
+'
+)
+```
+
+  * If src is in other path, use `web$config_cssJsPath("your_path")` in **makecondition** -- no need to change `web$cssJsPath` (it will change accordingly).
+
+
+```{r local_jquery, drake=F}
+local_jquery <- 
+  htmltools::htmlDependency(
+    name="jquery",
+    version="3.5.1",
+    src=c(href = "lib/jquery-3.5.1"),
+    # to use the same library here must use href, not filepath; otherwise, the current jquery system will be removed.
+    script = c("jquery.min.js")
+  )
+```
+
+### Attach dependency
+
+
+```{r html_complete}
+html_complete <- 
+  htmltools::tagList(
+    html_placeholder,
+    web$htmlDependencies$materialise(),
+    web$htmlDependencies$jquery(),# local_jquery, 
+    myDependency
+  )
+```
+
+  * If not using jquery from htmlwidgets, replace `local_jquery` with `web$htmlDependencies$jquery()`
+
+
+## Save
+
+```{r save_html}
+htmltools::save_html(
+  html_complete, 
+  file = web$output_filepath(),
+  libdir="lib"
+)
+```
+
+## Browse
+
+```{r}
+web$browse()
+```
+
+
+
