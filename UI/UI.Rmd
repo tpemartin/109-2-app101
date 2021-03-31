@@ -42,7 +42,9 @@ slide_out <- tags$ul(id="slide-out", class="sidenav",
       tags$a(href="#name", tags$span(class="white-text name",heritageData$caseName[[1]])))
     ),
     tags$li(
-      tags$div(heritageData$pastHistory[[1]])
+      tags$div(
+        class="container",
+        heritageData$pastHistory[[1]])
       #tags$a(href="#!", tags$i(class="material-icons"," info_outline"), 
       #              tags$p(heritageData$pastHistory[[1]]))
       )
