@@ -22,7 +22,11 @@ web$html_filename <- "index.html"
 xfun::download_file(drake::file_in("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1"), mode="wb")
 load("~/Github/109-2-app101/UI/widget_heritage.Rda", envir = .GlobalEnv)
 load("~/Github/109-2-app101/UI/heritage.Rdata", envir = .GlobalEnv)
-
+heritageData %>%
+  filter(
+    abs(longitude-121) <= 2.5,
+    abs(latitude-24) <= 2.5
+  ) -> heritageData
 ```
 
 ### side nav
