@@ -101,7 +101,7 @@ library(leaflet)
 
 ```{r widget_heritage}
 leaflet() %>% addTiles() %>%
-  addMarkers(data = heritageData, lng=~longitude, lat=~latitude,
+  addMarkers(data = heritageData, lng=~longitude, lat=~latitude, popup = ~caseName,
              clusterOptions = markerClusterOptions())
 ```
 
@@ -111,6 +111,22 @@ save_html(
 )
 ```
 
+### Floating action
+
+```{r floatActionBtns}
+floatActionBtns <- tags$div(class="fixed-action-btn", 
+  tags$a(class="btn-floating btn-large red", 
+    tags$i(class="large material-icons", "mode_edit")
+  ),
+  tags$ul( 
+    tags$li( tags$a(class="btn-floating red", tags$i(class="material-icons", "insert_chart"))),
+    tags$li( tags$a(class="btn-floating yellow darken-1", tags$i(class="material-icons", "format_quote"))),
+    tags$li( tags$a(class="btn-floating green", tags$i(class="material-icons"," publish"))),
+    tags$li( tags$a(class="btn-floating blue", tags$i(class="material-icons", "attach_file")))
+  )
+)
+      
+```
 
 ### Body Tags
 
@@ -129,7 +145,8 @@ bodyTags <- {
                                           frameborder="0", allowfullscreen=NA
                                        ))
                                )
-                      ))
+                      ),
+             floatActionBtns)
   )
 }
 ```
