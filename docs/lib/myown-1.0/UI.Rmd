@@ -46,7 +46,7 @@ googleSearch
 
 
 ```{r slide_out}
-slide_out <- tags$ul(id="slide-out", class="sidenav", 
+slide_out <- tags$ul(id="slide-out", class="sidenav", style="z-index: 9999;",
     tags$li( tags$div(class="user-view", 
       tags$div(class="background", 
         tags$img(src=heritageData$representImage[[1]])
@@ -130,6 +130,18 @@ floatActionBtns <- tags$div(class="fixed-action-btn",
 
 ### Body Tags
 
+```{r iframe_widgetHeritage}
+iframe_widgetHeritage <- tags$div(class="video-container",
+                                  tags$iframe(
+                                         src="widget_heritage.html",
+                                         height="100%", #widget_heritage$sizingPolicy$defaultHeight,
+                                         weight="400", #widget_heritage$sizingPolicy$defaultWidth,
+                                          frameborder="0", allowfullscreen=NA
+                                       )
+)
+```
+
+
 ```{r bodyTags}
 bodyTags <- {
   htmltools::tagList(
@@ -137,13 +149,7 @@ bodyTags <- {
     tags$div(class="container",
              tags$div(class="row",
                       tags$div(class="col s12 ",
-                               tags$div(class="video-container",
-                                       tags$iframe(
-                                         src="widget_heritage.html",
-                                         height=widget_heritage$sizingPolicy$defaultHeight,
-                                         weight=widget_heritage$sizingPolicy$defaultWidth,
-                                          frameborder="0", allowfullscreen=NA
-                                       ))
+                               widget_heritage
                                )
                       ),
              floatActionBtns)
