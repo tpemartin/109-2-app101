@@ -102,7 +102,13 @@ library(leaflet)
 ```{r widget_heritage}
 leaflet() %>% addTiles() %>%
   addMarkers(data = heritageData, lng=~longitude, lat=~latitude, popup = ~caseName,
-             clusterOptions = markerClusterOptions())
+             clusterOptions = markerClusterOptions()) %>%
+  addEasyButton(easyButton(
+    icon="fa-globe", title="Zoom to Level 1",
+    onClick=JS("function(btn, map){ map.setZoom(11); }"))) %>%
+  addEasyButton(easyButton(
+    icon="fa-crosshairs", title="Locate Me",
+    onClick=JS("function(btn, map){ map.locate({setView: true}); }")))
 ```
 
 ```{r save_widgetHeritage}
@@ -128,6 +134,32 @@ floatActionBtns <- tags$div(class="fixed-action-btn",
       
 ```
 
+### Carousel
+
+```{r carousel_pic_generator}
+carousel_pic_generator <- function(src, href="#", materialboxed=F){
+  el_class="carousel-item"
+  if(materialboxed){
+    el_class="carousel-item materialboxed"
+  }
+  tags$a(class=el_class, href=href, tags$img(src=src))
+}
+```
+
+
+```{r carousel}
+carousel <-  tags$div(class="carousel", 
+    do.call(
+      tagList, 
+      purrr::map(
+        1:4,
+        ~{carousel_pic_generator(heritageData$representImage[[.x]])}
+      )
+    )
+  )
+```
+
+
 ### Body Tags
 
 ```{r iframe_widgetHeritage}
@@ -152,6 +184,8 @@ bodyTags <- {
                                widget_heritage
                                )
                       ),
+             tags$div(class="row",
+                      carousel),
              floatActionBtns)
   )
 }

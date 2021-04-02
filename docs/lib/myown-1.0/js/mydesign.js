@@ -9,4 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     var el_leaflet = $('div.leaflet-bottom.leaflet-right');
     el_leaflet.attr("style", "display: none;");
+    
+    var elems_carousel = document.querySelectorAll('.carousel');
+    var instances_carousel = M.Carousel.init(elems_carousel);
+    
+    var elems_mtBoxed = document.querySelectorAll('.materialboxed');
+    var instances_mtBoxed = M.Materialbox.init(elems_mtBoxed);
+
+
 });
