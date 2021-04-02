@@ -6,4 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     /* instance_sidenav.open(); */
     var el_fixActBtn = document.querySelectorAll('.fixed-action-btn');
     var instance_fixActBtn = M.FloatingActionButton.init(el_fixActBtn);
+    
+    var el_leaflet = $('div.leaflet-bottom.leaflet-right');
+    el_leaflet.attr("style", "display: none;");
 });
