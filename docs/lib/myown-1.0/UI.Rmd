@@ -20,7 +20,13 @@ library(econR)
 web$foldername="docs" # output folder name
 web$html_filename <- "index.html"
 xfun::download_file(drake::file_in("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1"), mode="wb")
-load("heritage.Rdata")
+load("~/Github/109-2-app101/UI/widget_heritage.Rda", envir = .GlobalEnv)
+load("~/Github/109-2-app101/UI/heritage.Rdata", envir = .GlobalEnv)
+heritageData %>%
+  filter(
+    abs(longitude-121) <= 2.5,
+    abs(latitude-24) <= 2.5
+  ) -> heritageData
 ```
 
 ### side nav
@@ -37,8 +43,10 @@ googleSearch <- glue::glue('https://www.google.com/search?q={searchContent}&sxsr
 googleSearch
 ```
 
+
+
 ```{r slide_out}
-slide_out <- tags$ul(id="slide-out", class="sidenav", 
+slide_out <- tags$ul(id="slide-out", class="sidenav", style="z-index: 9999;",
     tags$li( tags$div(class="user-view", 
       tags$div(class="background", 
         tags$img(src=heritageData$representImage[[1]])
@@ -46,7 +54,7 @@ slide_out <- tags$ul(id="slide-out", class="sidenav",
       tags$a(href="#user", tags$img(class="circle image-icon", src=heritageData$representImage[[1]])),
       tags$a(href=googleSearch, target="_blank", #"#name", 
              tags$span(class="white-text name",heritageData$caseName[[1]],
-             tags$i(class="material-icons img-icon red darken-2"," photo")))
+             tags$i(class="material-icons red darken-2"," photo")))
       )
     ),
     tags$li(
@@ -87,14 +95,84 @@ sideNav <- tagList(
   
 ```{r makecondition_widgets}
 .root <- rprojroot::is_rstudio_project$make_fix_file()
-load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
+# load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
+library(leaflet)
+```
+
+```{r widget_heritage}
+leaflet() %>% addTiles() %>%
+  addMarkers(data = heritageData, lng=~longitude, lat=~latitude, popup = ~caseName,
+             clusterOptions = markerClusterOptions()) %>%
+  addEasyButton(easyButton(
+    icon="fa-globe", title="Zoom to Level 1",
+    onClick=JS("function(btn, map){ map.setZoom(11); }"))) %>%
+  addEasyButton(easyButton(
+    icon="fa-crosshairs", title="Locate Me",
+    onClick=JS("function(btn, map){ map.locate({setView: true}); }")))
+```
+
+```{r save_widgetHeritage}
 save_html(
   widget_heritage, file=file.path(dirname(web$output_filepath()),"widget_heritage.html")
 )
 ```
 
+### Floating action
+
+```{r floatActionBtns}
+floatActionBtns <- tags$div(class="fixed-action-btn", 
+  tags$a(class="btn-floating btn-large red", 
+    tags$i(class="large material-icons", "mode_edit")
+  ),
+  tags$ul( 
+    tags$li( tags$a(class="btn-floating red", tags$i(class="material-icons", "insert_chart"))),
+    tags$li( tags$a(class="btn-floating yellow darken-1", tags$i(class="material-icons", "format_quote"))),
+    tags$li( tags$a(class="btn-floating green", tags$i(class="material-icons"," publish"))),
+    tags$li( tags$a(class="btn-floating blue", tags$i(class="material-icons", "attach_file")))
+  )
+)
+      
+```
+
+### Carousel
+
+```{r carousel_pic_generator}
+carousel_pic_generator <- function(src, href="#", materialboxed=F){
+  el_class="carousel-item"
+  if(materialboxed){
+    el_class="carousel-item materialboxed"
+  }
+  tags$a(class=el_class, href=href, tags$img(src=src))
+}
+```
+
+
+```{r carousel}
+carousel <-  tags$div(class="carousel", 
+    do.call(
+      tagList, 
+      purrr::map(
+        1:4,
+        ~{carousel_pic_generator(heritageData$representImage[[.x]])}
+      )
+    )
+  )
+```
+
 
 ### Body Tags
+
+```{r iframe_widgetHeritage}
+iframe_widgetHeritage <- tags$div(class="video-container",
+                                  tags$iframe(
+                                         src="widget_heritage.html",
+                                         height="100%", #widget_heritage$sizingPolicy$defaultHeight,
+                                         weight="400", #widget_heritage$sizingPolicy$defaultWidth,
+                                          frameborder="0", allowfullscreen=NA
+                                       )
+)
+```
+
 
 ```{r bodyTags}
 bodyTags <- {
@@ -103,15 +181,12 @@ bodyTags <- {
     tags$div(class="container",
              tags$div(class="row",
                       tags$div(class="col s12 ",
-                               tags$div(class="video-container",
-                                       tags$iframe(
-                                         src="widget_heritage.html",
-                                         height=widget_heritage$sizingPolicy$defaultHeight,
-                                         weight=widget_heritage$sizingPolicy$defaultWidth,
-                                          frameborder="0", allowfullscreen=NA
-                                       ))
+                               widget_heritage
                                )
-                      ))
+                      ),
+             tags$div(class="row",
+                      carousel),
+             floatActionBtns)
   )
 }
 ```

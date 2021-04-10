@@ -1,0 +1,79 @@
+---
+drake_cache: ".heritageWidget"
+---
+
+```{r}
+load("~/Github/109-2-app101/UI/heritage.Rdata", envir = .GlobalEnv)
+
+```
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/y2h4b3sr89u0ftt/election_drake.Rdata?dl=1", mode="wb")
+load("election_drake.Rdata")
+xfun::download_file("https://data.moi.gov.tw/MoiOD/System/DownloadFile.aspx?DATA=72874C55-884D-4CEA-B7D6-F60B0BE85AB0", mode="wb", output = "taiwanMap.zip")
+unzip("taiwanMap.zip")
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+drake_election$.updateCache(".drake_election")
+drake_election$source_plan()
+drake_election$makePlan()
+```
+
+```{r}
+drake_election$loadTarget$plt_taiwanElection_color()
+plt_taiwanElection_color
+drake_election$loadTarget$sf_taiwanElection()
+```
+
+```{r makecondition_wg}
+library(plotly)
+library(dplyr)
+```
+
+24.9561655,119.1243875
+
+```{r}
+heritageData_select <- 
+  heritageData %>%
+  dplyr::select(longitude, latitude, caseName) %>%
+  dplyr::filter(
+    abs(longitude-119)<=2,
+    abs(latitude-25)<=2
+  ) %>%
+  na.omit()
+```
+
+
+```{r}
+plot_ly(
+  showlegend=F
+) %>%
+  add_sf(
+    data=sf_taiwanElection,
+    stroke=I("white"),
+    hoverinfo="none"
+  ) %>%
+  add_markers(
+    data=heritageData_select,
+    x=~longitude,
+    y=~latitude,
+    color=I("#6fe7dd"),
+    alpha=0.5,
+    stroke=I("#3490de"),
+    hoverinfo="text",
+    text=~caseName
+  ) %>%
+  htmlwidgets::onRender("
+    function(el) { 
+      el.on('plotly_hover', function(d) { 
+        console.log('Hover: ', d); 
+      });
+      el.on('plotly_click', function(d) { 
+        console.log('Click: ', d);
+      });
+      el.on('plotly_selected', function(d) { 
+        console.log('Select: ', d); 
+      });
+    }
+  ")
+```
+
