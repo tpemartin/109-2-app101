@@ -1,0 +1,24 @@
+---
+drake_cache: ".data_price"
+---
+
+
+```{r makecondition}
+xfun::download_file("https://www.dropbox.com/s/c81jdk1uo06lfwj/price_data.Rdata?dl=1",
+                    mode="wb")
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(file.path(.root(),"R/inflation.R"))
+load("price_data.Rdata")
+```
+
+  * In：starting data: `df_inflation_long0`
+  
+  * Out：ending data: `df_infaltion_long_subcategories` and `df_inflation_long_total`.  
+    * has `年` column. 
+    * `項目` is factor, with proper level sequence.  
+
+
+```{r}
+generate_inflationPlot(df_inflation_long_subcategories, df_inflation_long_total)
+```
+
