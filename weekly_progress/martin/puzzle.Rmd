@@ -1,0 +1,132 @@
+---
+drake_cache: ".puzzle"
+---
+
+# 拼圖
+
+  * 嘉義仁武宮
+
+```{r makecondition}
+# 下載古蹟資料
+xfun::download_file("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1", mode="wb")
+load("heritage.Rdata")
+```
+
+https://data.boch.gov.tw/old_upload/_upload/Assets_new/building/487/photo/%E5%98%89%E7%BE%A9%E4%BB%81%E6%AD%A6%E5%AE%AE.jpg
+
+```{r imgX0}
+# 取得第一個古蹟的圖片網址
+targetUrl <- heritageData$representImage[[1]]
+targetUrlencoded <- URLencode(targetUrl)
+
+# 讀入圖片
+library(magick)
+magick::image_read(targetUrlencoded) -> imgX0
+imgX0
+```
+
+## Magick
+
+ * <https://cran.r-project.org/web/packages/magick/vignettes/intro.html>
+ 
+```{r puzzleX}
+magick::image_read("https://www.dropbox.com/s/tqafdnklkem45s5/imgX.jpg?dl=1") -> puzzleX
+puzzleX
+```
+
+ 
+Tools I use: 
+
+  * `image_info`, `image_crop`, `image_append`
+  
+  * `paste0`, `sample`
+  
+### Version 1
+
+```{r makecondition1}
+library(OpenImageR)
+```
+
+```{r version1}
+# 取得古蹟的圖片網址
+targetUrl <- heritageData$representImage[[17]]
+targetUrlencoded <- URLencode(targetUrl)
+download.file(targetUrlencoded,paste0(heritageData$caseName[[17]],".jpg"))
+# 讀入圖片
+OpenImageR::readImage(paste0(heritageData$caseName[[17]],".jpg")) -> imgX
+`圖片順序` <- sample(1:4,4,replace = FALSE)  # 拼圖順序
+if(nrow(imgX) %% 2 ==1){                     # 避免有dimension不吻合的情況
+   row_1 <- as.integer(nrow(imgX)/2)+1
+   row_2 <- row_1
+}else{
+   row_1 <- nrow(imgX)/2
+   row_2 <- nrow(imgX)/2+1
+}
+if(ncol(imgX) %% 2 ==1){
+   col_1 <- as.integer(ncol(imgX)/2)+1
+   col_2 <- col_1
+}else{
+   col_1 <- ncol(imgX)/2
+   col_2 <- ncol(imgX)/2+1
+}
+# 平均切割成四塊
+upper_left  <- imgX[1:row_1,1:col_1,] 
+upper_right <-imgX[1:row_1,col_2:ncol(imgX),]
+lower_left  <- imgX[row_2:nrow(imgX),1:col_1,]
+lower_right <- imgX[row_2:nrow(imgX),col_2:ncol(imgX),]
+order_list <-list(upper_left,
+                  upper_right,
+                  lower_left,
+                  lower_right)
+
+# 產生一個和原圖大小的array , 再把不同區塊填入
+newPicture <- array(sample(1:10,length(imgX),replace=T),dim=c(nrow(imgX),ncol(imgX),3))
+newUpperLeft <- order_list[[`圖片順序`[1]]]
+newUpperRight <- order_list[[`圖片順序`[2]]]
+newLowerLeft  <- order_list[[`圖片順序`[3]]]
+newLowerRight <- order_list[[`圖片順序`[4]]]
+newPicture[1:row_1,1:col_1,] <- order_list[[`圖片順序`[1]]]
+newPicture[1:row_1,col_2:ncol(imgX),] <- order_list[[`圖片順序`[2]]]
+newPicture[row_2:nrow(imgX),1:col_1,] <- order_list[[`圖片順序`[3]]]
+newPicture[row_2:nrow(imgX),col_2:ncol(imgX),] <- order_list[[`圖片順序`[4]]]
+newPicture
+# 生成圖片
+writeImage(newPicture,"jigsaw.jpg")
+imageShow("jigsaw.jpg")
+
+```
+
+### Version 2
+
+```{r version2}
+imgX <- imgX0
+#切割圖片
+##取長寬
+a<-image_info(imgX)
+width <- a$width
+height <- a$height
+
+
+##分成四部分
+right_up <-image_crop(imgX,"512X341+512+0") #右上
+
+right_down <- image_crop(imgX,"512X341+512+341") #右下
+
+left_up <- image_crop(imgX,"512X341") #左上
+
+left_down <- image_crop(imgX,"512X341+0+314") #左下
+
+NewPic <- c(left_up,left_down,right_up,right_down)
+
+#隨機打亂
+num <- sample(NewPic,4,FALSE)
+
+#黏貼
+a <- image_append(num[1:2],stack=TRUE)
+b <- image_append(num[3:4],stack=TRUE)
+Puzzle <- image_append(c(a,b))
+
+Puzzle
+
+```
+
