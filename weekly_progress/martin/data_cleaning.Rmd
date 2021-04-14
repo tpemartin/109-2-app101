@@ -1,0 +1,106 @@
+---
+title: "data cleaning"
+output: html_document
+drake_cach: ".data_cleaning"
+date: `r Sys.Date()`
+issue: "https://github.com/tpemartin/109-2-app101/issues/26"
+---
+
+## Codes
+
+### read data
+
+```{r makecondition}
+library(jsonlite)
+heritageData <- heritageData0 <-fromJSON("https://raw.githubusercontent.com/tpemartin/109-2-app101/main/data/heritage.json")
+```
+
+### version 1
+
+```{r version1}
+#以緯度找到跑出台灣或無資料的古蹟
+
+## 01 找錯誤資料，導出邏輯變量
+outofcontrol_latitude <- 
+  !(
+    (heritageData$latitude < 27)
+  & (heritageData$latitude > 3)
+  )
+
+## 02 拉出正確資料(經緯互換)
+correct_latitude <- heritageData$longitude[outofcontrol_latitude]
+correct_longitude <- heritageData$latitude[outofcontrol_latitude]
+
+## 03 更正資料
+heritageData$latitude[
+  outofcontrol_latitude & !is.na(outofcontrol_latitude)] <- 
+  correct_latitude[!is.na(correct_latitude)]
+
+heritageData$longitude[
+  outofcontrol_latitude & !is.na(outofcontrol_latitude)] <-
+  correct_longitude[!is.na(correct_longitude)]
+
+#同場加映：沒有緯度資料之項目
+missingdata <- is.na(heritageData$latitude) #邏輯變量
+heritageData[missingdata, ]
+
+```
+
+### version 2
+
+```{r version2}
+heritage_data <- heritageData0
+h_lat <- heritageData$latitude
+h_long <- heritageData$longitude
+correct_lat <- h_long[(h_lat > 27)& (!is.na(h_lat))]
+heritageData$longitude[(h_lat > 27)& (!is.na(h_lat))] <- h_lat[(h_lat > 27)& (!is.na(h_lat))]
+heritageData$latitude[(h_lat > 27)& (!is.na(h_lat))] <- correct_lat
+
+```
+
+### version 3
+
+```{r version3}
+heritageData <- heritageData0
+# limit_1 無法排除 NULL 值
+
+limit_1 <- (heritageData$longitude <25 & heritageData$latitude >120)
+
+# na_data 取出 NULL值
+
+
+na_data <- (is.na(heritageData$longitude) |  is.na(heritageData$latitude))
+
+limit_2 <- !limit_1
+
+#須加上na_data == FALSE，否則 right_lati 會包括 NULL 值
+
+right_lati <- wrong_long <- heritageData$longitude[limit_1 & na_data==FALSE]
+
+right_long <- wrong_lati <- heritageData$latitude[limit_1 & na_data==FALSE]
+
+heritageData$longitude[limit_1 & na_data==FALSE] <-right_long
+
+heritageData$latitude[limit_1 & na_data==FALSE] <-right_lati
+
+# 修正後的錯誤資料
+
+heritageData$longitude[limit_1 & na_data==FALSE]
+
+heritageData$latitude[limit_1 & na_data==FALSE]
+
+# 取出原先正確資料
+
+correct_long <- heritageData$longitude[limit_2|na_data]
+
+correct_lati <-heritageData$latitude[limit_2|na_data]
+
+
+correct_long
+
+```
+
+```{r}
+save(heritageData, file="heritageDataRevised.Rdata")
+```
+
