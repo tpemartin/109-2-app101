@@ -1,0 +1,80 @@
+---
+title: "data fixing"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1", mode="wb")
+load("heritage.Rdata")
+
+
+
+
+```
+
+```{r}
+# limit_1 無法排除 NULL 值
+
+limit_1 <- (heritageData$longitude <25 & heritageData$latitude >120)
+
+# na_data 取出 NULL值
+
+
+na_data <- (is.na(heritageData$longitude) |  is.na(heritageData$latitude))
+
+limit_2 <- !limit_1
+
+#須加上na_data == FALSE，否則 right_lati 會包括 NULL 值
+
+right_lati <- wrong_long <- heritageData$longitude[limit_1 & na_data==FALSE]
+
+right_long <- wrong_lati <- heritageData$latitude[limit_1 & na_data==FALSE]
+
+heritageData$longitude[limit_1 & na_data==FALSE] <-right_long
+
+heritageData$latitude[limit_1 & na_data==FALSE] <-right_lati
+
+# 修正後的錯誤資料
+
+heritageData$longitude[limit_1 & na_data==FALSE]
+
+heritageData$latitude[limit_1 & na_data==FALSE]
+
+```
+```{r}
+# 取出原先正確資料
+
+correct_long <- heritageData$longitude[limit_2|na_data]
+
+correct_lati <-heritageData$latitude[limit_2|na_data]
+
+
+correct_long
+
+```
+
+```{r}
+
+print(heritageData)
+
+View(heritageData)
+
+
+```
+
+
+
+```{r}
+library(knitr)
+
+purl("data_fixing.Rmd")
+
+
+
+```
+
