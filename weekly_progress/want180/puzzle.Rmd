@@ -1,0 +1,42 @@
+---
+drake_cache: ".puzzle"
+---
+
+# 拼圖
+
+  * 嘉義仁武宮
+
+```{r makecondition}
+# 下載古蹟資料
+xfun::download_file("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1", mode="wb")
+load("heritage.Rdata")
+```
+
+https://data.boch.gov.tw/old_upload/_upload/Assets_new/building/487/photo/%E5%98%89%E7%BE%A9%E4%BB%81%E6%AD%A6%E5%AE%AE.jpg
+
+```{r imgX}
+# 取得第一個古蹟的圖片網址
+targetUrl <- heritageData$representImage[[1]]
+targetUrlencoded <- URLencode(targetUrl)
+
+# 讀入圖片
+library(magick)
+magick::image_read(targetUrlencoded) -> imgX
+imgX
+```
+
+## Magick
+
+ * <https://cran.r-project.org/web/packages/magick/vignettes/intro.html>
+ 
+```{r puzzleX}
+magick::image_read("https://www.dropbox.com/s/tqafdnklkem45s5/imgX.jpg?dl=1") -> puzzleX
+puzzleX
+```
+
+ 
+Tools I use: 
+
+  * `image_info`, `image_crop`, `image_append`
+  
+  * `paste0`, `sample`

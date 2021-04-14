@@ -1,0 +1,155 @@
+---
+drake_cache: ".myHtml"
+---
+
+## Setup environment
+
+  * Addins: Initiate drake -> `drake$source_plan()` -> `drake$makePlan()`.
+  
+  * `web$browse()` to see the output. 
+  
+  * If any change to Rmd, save the Rmd, then `drake$update()` -> `web$browser()` to see the change.
+  
+  * Your html output file is in `web$output_filepath()`.
+
+```{r makecondition}
+library(dplyr)
+library(htmltools)
+library(econR)
+.GlobalEnv$web <- econR::Web()
+web$foldername="docs2" # output folder name
+web$html_filename <- "index.html"
+
+```
+
+### Widgets
+
+  * Widgets can be designed in a separate file and saved in a Rdata for loading here.
+  
+  * While loading, make sure `envir = .GlobalEnv`.
+  
+  * Label widget loading chunk `makecondition_xxx`. 
+  
+```{r makecondition_widgets}
+# Demo: htmlwidget embed
+if(!file.exists("plt_gg_bikeRouteStm.Rda")) xfun::download_file("https://www.dropbox.com/s/ify9h26c172t7t5/plt_gg_bikeRouteStm.Rda?dl=1", mode="wb")
+load("plt_gg_bikeRouteStm.Rda", envir = .GlobalEnv)
+
+```
+
+
+### Body Tags
+
+```{r bodyTags}
+bodyTags <- {
+  htmltools::tagList(
+    tags$main(
+      tags$h5(class="center-align",
+      "〖Title〗")
+    ),
+    tags$div(class="container",
+             tags$div(class="row",
+                      tags$div(class="col s3",
+                        tags$h5(class="center-align", "〖sidebar panel〗")),
+                      tags$div(class="col s9",
+                               plt_gg_bikeRouteStm)
+                      ))
+  )
+}
+```
+
+
+## HTML Structure
+
+```{r html_placeholder}
+html_placeholder <- tags$html(
+  tags$head(
+    do.call(htmltools::tagList, headTags),
+    tags$meta(
+      name="viewport",
+      content="width=device-width, initial-scale=1.0"
+    )
+  ),
+  tags$body(
+    do.call(htmltools::tagList, bodyTags)
+  )
+)
+```
+
+## Dependencies
+
+### Head Tags
+
+```{r headTags}
+headTags <- {
+  htmltools::tagList(
+    htmltools::tags$link(
+      href="https://fonts.googleapis.com/icon?family=Material+Icons",
+      rel="stylesheet"
+    )
+  )
+}
+```
+
+### Define dependency
+
+```{r myDependency}
+myDependency <- htmltools::htmlDependency(
+  name="myown",
+  version="1.0",
+  src=c(filepath=web$cssJsPath),
+  stylesheet = "css/mystyle.css",
+  script = "js/mydesign.js",
+  head = '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+TC">
+'
+)
+```
+
+  * If src is in other path, use `web$config_cssJsPath("your_path")` in **makecondition** -- no need to change `web$cssJsPath` (it will change accordingly).
+
+
+```{r local_jquery}
+local_jquery <- 
+  htmltools::htmlDependency(
+    name="jquery",
+    version="3.5.1",
+    src=c(href = "lib/jquery-3.5.1"),
+    # to use the same library here must use href, not filepath; otherwise, the current jquery system will be removed.
+    script = c("jquery.min.js")
+  )
+```
+
+### Attach dependency
+
+
+```{r html_complete}
+html_complete <- 
+  htmltools::tagList(
+    html_placeholder,
+    web$htmlDependencies$materialise(),
+    local_jquery, 
+    myDependency
+  )
+```
+
+  * If not using jquery from htmlwidgets, replace `local_jquery` with `web$htmlDependencies$jquery()`
+
+
+## Save
+
+```{r save_html}
+htmltools::save_html(
+  html_complete, 
+  file = web$output_filepath(),
+  libdir="lib"
+)
+```
+
+## Browse
+
+```{r}
+web$browse()
+```
+
+
+
