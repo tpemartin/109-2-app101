@@ -20,7 +20,13 @@ library(econR)
 web$foldername="docs" # output folder name
 web$html_filename <- "index.html"
 xfun::download_file(drake::file_in("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1"), mode="wb")
-load("heritage.Rdata")
+load("~/Github/109-2-app101/UI/widget_heritage.Rda", envir = .GlobalEnv)
+load("~/Github/109-2-app101/UI/heritage.Rdata", envir = .GlobalEnv)
+heritageData %>%
+  filter(
+    abs(longitude-121) <= 2.5,
+    abs(latitude-24) <= 2.5
+  ) -> heritageData
 ```
 
 ### side nav
@@ -37,6 +43,8 @@ googleSearch <- glue::glue('https://www.google.com/search?q={searchContent}&sxsr
 googleSearch
 ```
 
+
+
 ```{r slide_out}
 slide_out <- tags$ul(id="slide-out", class="sidenav", 
     tags$li( tags$div(class="user-view", 
@@ -46,7 +54,7 @@ slide_out <- tags$ul(id="slide-out", class="sidenav",
       tags$a(href="#user", tags$img(class="circle image-icon", src=heritageData$representImage[[1]])),
       tags$a(href=googleSearch, target="_blank", #"#name", 
              tags$span(class="white-text name",heritageData$caseName[[1]],
-             tags$i(class="material-icons img-icon red darken-2"," photo")))
+             tags$i(class="material-icons red darken-2"," photo")))
       )
     ),
     tags$li(
@@ -87,7 +95,17 @@ sideNav <- tagList(
   
 ```{r makecondition_widgets}
 .root <- rprojroot::is_rstudio_project$make_fix_file()
-load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
+# load(file.path(.root(),"widget_heritage.Rda"), envir = .GlobalEnv)
+library(leaflet)
+```
+
+```{r widget_heritage}
+leaflet() %>% addTiles() %>%
+  addMarkers(data = heritageData, lng=~longitude, lat=~latitude,
+             clusterOptions = markerClusterOptions())
+```
+
+```{r save_widgetHeritage}
 save_html(
   widget_heritage, file=file.path(dirname(web$output_filepath()),"widget_heritage.html")
 )
