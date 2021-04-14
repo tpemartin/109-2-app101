@@ -62,3 +62,4 @@ generate_inflationPlot <- function(df_inflation_long_subcategories, df_inflation
     ) %>%
     plotly::rangeslider()
 }
+

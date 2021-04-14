@@ -7,6 +7,7 @@ drake_cache: ".data_price"
 xfun::download_file("https://www.dropbox.com/s/c81jdk1uo06lfwj/price_data.Rdata?dl=1",
                     mode="wb")
 .root <- rprojroot::is_rstudio_project$make_fix_file()
+.root()
 source(file.path(.root(),"R/inflation.R"))
 load("price_data.Rdata")
 ```
