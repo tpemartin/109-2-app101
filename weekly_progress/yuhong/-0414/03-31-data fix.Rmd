@@ -1,0 +1,69 @@
+---
+title: "data fix"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r makecondition}
+# 前言：下載古蹟資料
+xfun::download_file("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1", mode="wb")
+load("heritage.Rdata")
+```
+
+```{r}
+#以緯度找到跑出台灣或無資料的古蹟
+
+## 01 找錯誤資料，導出邏輯變量
+outofcontrol_latitude <- 
+  !(
+    (heritageData$latitude < 27)
+  & (heritageData$latitude > 3)
+  )
+
+## 02 拉出正確資料(經緯互換)
+correct_latitude <- heritageData$longitude[outofcontrol_latitude]
+correct_longitude <- heritageData$latitude[outofcontrol_latitude]
+
+## 03 更正資料
+heritageData$latitude[
+  outofcontrol_latitude & !is.na(outofcontrol_latitude)] <- 
+  correct_latitude[!is.na(correct_latitude)]
+
+heritageData$longitude[
+  outofcontrol_latitude & !is.na(outofcontrol_latitude)] <-
+  correct_longitude[!is.na(correct_longitude)]
+```
+
+```{r} 
+#同場加映：沒有緯度資料之項目
+missingdata <- is.na(heritageData$latitude) #邏輯變量
+heritageData[missingdata, ]
+```
+
+

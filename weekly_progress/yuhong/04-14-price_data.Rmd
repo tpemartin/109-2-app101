@@ -8,7 +8,9 @@ xfun::download_file("https://www.dropbox.com/s/c81jdk1uo06lfwj/price_data.Rdata?
                     mode="wb")
 .root <- rprojroot::is_rstudio_project$make_fix_file()
 .root()
-source(file.path(.root(),"R/inflation.R"))
+source(file.path(.root(),'R/fieldtrip.R'), encoding = "UTF-8")
+source(file.path(.root(),'weekly_progress\yuhong\fieldtrip1.R'), encoding = "UTF-8")
+source('C:\Users\su200\OneDrive\document\GitHub\109-2-app101\weekly_progress\yuhong\fieldtrip1.R', echo=TRUE)
 load("price_data.Rdata")
 ```
 
