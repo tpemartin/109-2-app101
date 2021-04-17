@@ -1,0 +1,16 @@
+---
+title: "data fixing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+h_lat <- heritageData$latitude
+h_long <- heritageData$longitude
+correct_lat <- h_long[(h_lat > 27)& (!is.na(h_lat))]
+heritageData$longitude[(h_lat > 27)& (!is.na(h_lat))] <- h_lat[(h_lat > 27)& (!is.na(h_lat))]
+heritageData$latitude[(h_lat > 27)& (!is.na(h_lat))] <- correct_lat
+```
+
