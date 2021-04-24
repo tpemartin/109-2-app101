@@ -1,0 +1,60 @@
+---
+title: "互動式經濟資料視覺化"
+output: output_format
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+source('/Users/frankchao/Desktop/109-2-app101/R/fieldtrip.R', echo=TRUE)
+xfun::download_file("https://www.dropbox.com/s/v1eltesyszku3pc/04-Apr-2021-1640.gpx?dl=1", mode="wb")
+xfun::download_file("https://www.dropbox.com/s/nn685shrrk6z0ma/df_gpx.Rdata?dl=1", mode='wb')
+load("df_gpx.Rdata")
+```
+
+  * download: gpx
+  
+  * obtain: df_gpx
+
+### Map
+
+```{r}
+library(leaflet)
+library(xml2)
+#讀取gpx檔 , 並轉成list
+gpx_data <- as_list(read_xml("/Users/frankchao/Desktop/109-2-app101/weekly_progress/frank/04-Apr-2021-1640.gpx"))  
+gpx_data <- gpx_data$gpx$trk$trkseg
+#使map將gpx_data中的每一筆資料 , 取出(lat,lon,ele,time)
+#合併成list
+purrr::map(
+  seq_along(gpx_data),
+  ~ {
+      lat_And_lon <-  attributes(gpx_data[[.x]])[c("lat","lon")]
+      ele_And_time <- unlist(gpx_data[[.x]][c("ele","time")])
+      lat_And_lon[c("ele","time")] <- ele_And_time[c("ele","time")]
+      as.vector(unlist(lat_And_lon))
+  }
+) -> lat_lon_ele_time
+# 轉成atomic vector
+result <- unlist(lat_lon_ele_time)
+# 4個一組抓出lat,lon,ele,time的值 , 形成list後轉成dataframe
+df <- as.data.frame(list(
+          "lon"  = as.numeric(result[rep(c(F,T,F,F),length(result)/4)]),
+          "lat"  = as.numeric(result[rep(c(T,F,F,F),length(result)/4)]),
+          "ele"  = result[rep(c(F,F,T,F),length(result)/4)],
+          "time" = result[rep(c(F,F,F,T),length(result)/4)]
+                                                            ))
+fieldtrip$create_map(heritageData)
+fieldtrip$show_path(df)
+```
+
+### Upload your data
+
+  * <https://drive.google.com/drive/folders/1I-2LjTfIcHcdqhjy5U2nhrOBVDwYUPOJ?usp=sharing>

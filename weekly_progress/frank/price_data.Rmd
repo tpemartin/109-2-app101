@@ -1,0 +1,41 @@
+---
+drake_cache: ".data_price"
+---
+
+
+```{r makecondition}
+xfun::download_file("https://www.dropbox.com/s/c81jdk1uo06lfwj/price_data.Rdata?dl=1",
+                    mode="wb")
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(file.path(.root(),"R/inflation.R"))
+load("price_data.Rdata")
+```
+
+  * In：starting data: `df_inflation_long0`
+  
+  * Out：ending data: `df_infaltion_long_subcategories` and `df_inflation_long_total`.  
+    * has `年` column. 
+    * `項目` is factor, with proper level sequence.  
+
+```{r}
+names(df_inflation_long0)[1] <- "年"
+# 取出總指數
+df_total <- df_inflation_long0[df_inflation_long0$項目 == "總指數" ,]
+# 取出!=總指數
+# 項目改為factor , 並給予適當順序
+df_categories <- df_inflation_long0[df_inflation_long0$項目 != "總指數",]
+df_categories$項目 <- factor(df_categories$項目 ,
+                             levels = c("一.食物類",
+                                        "二.衣著類",
+                                        "三.居住類",
+                                        "四.交通及通訊類",
+                                        "五.醫藥保健類",
+                                        "六.教養娛樂類" ,
+                                        "七.雜項類"))
+```
+
+
+```{r}
+generate_inflationPlot(df_categories, df_total)
+```
+
