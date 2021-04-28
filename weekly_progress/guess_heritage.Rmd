@@ -1,0 +1,26 @@
+---
+title: "Guess heritage"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+
+# randomly select 4 heritage
+
+# turn the 1st heritage photo into a puzzle
+
+# create heritage photo puzzle based on user defined difficulty level (easy=3x3, medium=5x5, difficult=9x9)
+
+
+# let user select which one is the right answer
+
+# tell user it's correct or not.
+```
+
+  * `rstudioapi::showPrompt()` 會跳出要使用者輸入。
