@@ -1,0 +1,28 @@
+---
+title: "時光縮影"
+output: html_document
+---
+
+  * Goal: 依使用者選定年份區間，篩出有事蹟出現在年份區間的古蹟。
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+```
+
+```{r}
+heritage1 <- heritageData[1,]
+heritage1$pastHistory
+```
+
+```{r}
+heritage25 <- heritageData[25,]
+heritage25$pastHistory
+```
+
+
+  * 先練習得到heritage1, heritage25 pastHistory提到的年份，再去練習得到所有heritage的年份。

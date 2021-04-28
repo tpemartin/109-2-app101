@@ -1,0 +1,202 @@
+---
+title: "readGpx"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+```{r}
+
+library(plotKML)
+
+library(ggplot2)
+
+library(ggmap)
+
+
+gpx <- readGPX("2021_04_10_18_43_21 (1).gpx",metadata=F,bounds=F,waypoints=F,tracks=T,routes=T)
+
+real_tracks <- gpx[["tracks"]][[1]][["1 (2021-04-10 18:43:21)"]]
+
+real_tracks$lon
+
+real_tracks$lat
+
+pcp_lon <- c(max(real_tracks$lon),min(real_tracks$lon))
+
+pcp_lat <- c(max(real_tracks$lat),min(real_tracks$lat))
+
+
+
+
+
+```
+
+
+```{r}
+
+library(knitr)
+
+purl("readGPX.Rmd")
+
+
+```
+
+
+
+
+```{r}
+ library(ggmap)
+register_google(key = "AIzaSyB_DrrjWoHeX7IGVmhe8Dh_6t9_PDWcuxU", write = TRUE) 
+
+
+```
+
+
+
+```{r}
+
+library(ggmap)
+
+tw.xy <- geocode("Taiwan")
+
+tw.xy
+
+tw.map <- get_map(location=c(lon= 121.3701,lat=24.93372), zoom = 20, language = "en-EN")
+
+
+ggmap(tw.map)
+
+
+
+
+```
+
+```{r}
+has_google_key()
+```
+
+
+```{r}
+library(RgoogleMaps)
+
+test_geo <- qbbox(real_tracks$lat,real_tracks$lon)
+
+
+print(test_geo)
+
+
+```
+
+
+
+
+
+
+
+```{r}
+
+library(RgoogleMaps)
+
+
+my.lat <- c(25.175339, 25.082288, 25.042185, 25.046254)
+my.lon <- c(121.450003, 121.565481, 121.614548, 121.517532)
+bb = qbbox(my.lat, my.lon)
+ 
+print(bb)
+```
+```{r}
+
+
+# 為何不能用 rbind 分類 ?
+
+# rbind : 以row順序排列
+
+# cbind : 以 column 順序排列
+
+track_sanxia <- GetMap.bbox(test_geo$lonR,test_geo$latR,destfile="trackbook1.png",maptype="roadmap",zoom=20)
+
+Mark_place <- cbind.data.frame(lat=real_tracks$lat,lon=real_tracks$lon)
+
+View(Mark_place)
+
+```
+
+```{r}
+trace_Map <- PlotOnStaticMap(track_sanxia,lat=Mark_place[,"lat"],lon=Mark_place[,"lon"],destfile="tracebook1.png",cex=1,pch=25,col=1:8,Fun=lines,add=F,lwd=2
+)
+
+
+trace_map <- PlotOnStaticMap(track_sanxia, lat=Mark_place[,"lat"],lon=Mark_place[,"lon"],destfile="tracebook1.png",col="Blue",add=T,lwd=4,FUN=lines)
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+
+
+MyMap <- GetMap.bbox(bb$lonR, bb$latR, destfile = "my.png", maptype = "roadmap")
+
+My.markers <- cbind.data.frame(lat = my.lat, lon = my.lon) 
+tmp <- PlotOnStaticMap(MyMap, lat = My.markers[,"lat"], 
+                       
+lon = My.markers[,"lon"], destfile
+= "my.png", cex=2.5, pch=20, col="red",Fun=lines ,add=F)
+```
+
+
+```{r}
+
+tmp <- PlotOnStaticMap(MyMap, lat = My.markers[,"lat"], lon = My.markers[,"lon"], cex=2.5,
+pch=20, col=1:4, add=F)
+
+
+# 加上藍線
+tmp <- PlotOnStaticMap(MyMap, lat = My.markers[,"lat"], lon = My.markers[,"lon"], col="blue",
+add=T, FUN = lines, lwd = 2)
+
+
+
+
+```
+
+
