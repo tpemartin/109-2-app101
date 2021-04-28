@@ -1,0 +1,63 @@
+---
+title: "rank chinese number"
+output: html_document
+---
+
+It is common to rank chinese number 一～十，壹～拾
+
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+```
+
+It would be nice that you can process the following 
+```{r}
+fct_numbers <- factor(c("一","五","七", "參拾參","五十七","拾壹"))
+oldLevels <- levels(fct_numbers)
+oldLevels
+```
+so that its level sequence will be 
+```{r}
+c("一","五","七","拾壹", "參拾參","五十七")
+```
+without using
+```{r}
+levels(fct_numbers) <- c("一","五","七","拾壹", "參拾參","五十七") # OR
+fct_numbers <- factor(c("一","五","七", "參拾參","五十七","拾壹"), 
+                      levels = c("一","五","七","拾壹", "參拾參","五十七")
+)
+```
+
+In other words, your algorithm should take these three symbols:
+
+  * `chineseNumber1_char`, `chineseNumber1_char`, `oldLevels`
+  
+
+and come out 
+
+  * `newLevels`
+
+which is a character with correct order. (Imagine that oldLevels can be any randomly given string of chinese number characters.)
+
+For simplicity, we assume that `oldLevels` elements are between 0 and 99 in Chinese characters.
+
+  
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹")
+
+{ # Your algorithm
+  
+  
+  
+}
+
+newLevels 
+```
+
+
