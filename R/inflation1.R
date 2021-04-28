@@ -1,5 +1,6 @@
 plot_inflations <- function(list_dfInflations, totalName = "總項目"){
   require(plotly)
+  require(tidyverse)
   plotly::plot_ly() %>%
     plotly::add_lines(
       data=list_dfInflations$df_inflation_long_subcategories,
@@ -54,11 +55,11 @@ generate_inflationPlot <- function(df_inflation_long_subcategories, df_inflation
   plotly::plot_ly() %>%
     plotly::add_lines(
       data=df_inflation_long_subcategories,
-      x=~"年", y=~"上漲率", split=~"項目", line = list(width=1, dash="dot"), 
+      x=~`年`, y=~`上漲率`, split=~`項目`, line = list(width=1, dash="dot"), 
     ) %>%
     plotly::add_lines(
       data=df_inflation_long_total,
-      x=~"年", y=~"上漲率", color=I("dodgerblue3"), line = list(width=3), name="總項目"
+      x=~`年`, y=~`上漲率`, color=I("dodgerblue3"), line = list(width=3), name="總項目"
     ) %>%
     plotly::rangeslider()
 }
