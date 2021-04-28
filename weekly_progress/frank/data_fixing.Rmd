@@ -1,4 +1,4 @@
----
+
 title: "data fixing"
 output: html_document
 ---
@@ -18,18 +18,18 @@ load("heritage.Rdata")
 ```
 
 ```{r}
-# limit_1 µLªk±Æ°£ NULL ­È
+# limit_1 ï¿½Lï¿½kï¿½Æ°ï¿½ NULL ï¿½ï¿½
 
 limit_1 <- (heritageData$longitude <25 & heritageData$latitude >120)
 
-# na_data ¨ú¥X NULL­È
+# na_data ï¿½ï¿½X NULLï¿½ï¿½
 
 
 na_data <- (is.na(heritageData$longitude) |  is.na(heritageData$latitude))
 
 limit_2 <- !limit_1
 
-#¶·¥[¤Wna_data == FALSE¡A§_«h right_lati ·|¥]¬A NULL ­È
+#ï¿½ï¿½ï¿½[ï¿½Wna_data == FALSEï¿½Aï¿½_ï¿½h right_lati ï¿½|ï¿½]ï¿½A NULL ï¿½ï¿½
 
 right_lati <- wrong_long <- heritageData$longitude[limit_1 & na_data==FALSE]
 
@@ -39,7 +39,7 @@ heritageData$longitude[limit_1 & na_data==FALSE] <-right_long
 
 heritageData$latitude[limit_1 & na_data==FALSE] <-right_lati
 
-# ­×¥¿«áªº¿ù»~¸ê®Æ
+# ï¿½×¥ï¿½ï¿½áªºï¿½ï¿½~ï¿½ï¿½ï¿½
 
 heritageData$longitude[limit_1 & na_data==FALSE]
 
@@ -47,7 +47,7 @@ heritageData$latitude[limit_1 & na_data==FALSE]
 
 ```
 ```{r}
-# ¨ú¥X­ì¥ý¥¿½T¸ê®Æ
+# ï¿½ï¿½Xï¿½ï¿½ï¿½Tï¿½ï¿½ï¿½
 
 correct_long <- heritageData$longitude[limit_2|na_data]
 
@@ -77,4 +77,22 @@ purl("data_fixing.Rmd")
 
 
 ```
+
+
+---
+title: "data fixing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+h_lat <- heritageData$latitude
+h_long <- heritageData$longitude
+correct_lat <- h_long[(h_lat > 27)& (!is.na(h_lat))]
+heritageData$longitude[(h_lat > 27)& (!is.na(h_lat))] <- h_lat[(h_lat > 27)& (!is.na(h_lat))]
+heritageData$latitude[(h_lat > 27)& (!is.na(h_lat))] <- correct_lat
+```
+
 
