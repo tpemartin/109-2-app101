@@ -1,0 +1,171 @@
+---
+title: "num_year"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+```
+
+```{r}
+library(stringr)
+heritage1 <- heritageData[1,]
+
+standard="[1](0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)"
+
+ans_1 <- str_extract_all(heritage1$pastHistory,pattern=standard)
+
+ans_1
+
+```
+
+```{r}
+library(stringr)
+
+ans_heritageData <- str_extract_all(heritageData$pastHistory,pattern=standard)
+
+
+unlist_heritageData <- unlist(ans_heritageData)
+
+unlist_heritageData
+
+
+
+```
+
+```{r}
+
+library(stringr)
+unlist_heritageData<- as.integer(unlist_heritageData)
+
+levels_data <- cut(unlist_heritageData,breaks=c(min(unlist_heritageData),1700,1800,1900,max(unlist_heritageData)))
+
+ans <-str_count(heritageData$pastHistory,pattern=as.character(1677))
+
+for (i in range(length(ans))){
+  a5=0
+  
+  if (ans[i]==1){
+    
+    a5=a5+ans[i]
+    
+  }
+  
+  
+}
+
+
+a5
+
+
+
+
+
+
+```
+
+
+
+
+```{r}
+
+# 無法執行
+
+library(rstudioapi)
+
+chosen_year=showPrompt("年份輸入","請輸入年份",1982)
+
+a <-if (as.character(chosen_year) %in% heritageData$pastHistory){
+  
+  print(heritageData$pastHistory[as.character(chosen_year) %in% heritageData$pastHistory])
+  
+}
+
+
+as.character(chosen_year) %in% heritageData$pastHistory
+
+
+
+
+
+```
+
+
+```{r}
+library(knitr)
+
+purl("year_track.Rmd")
+```
+
+
+
+```{r}
+
+a=5
+
+b=2
+
+if (a==1){
+  
+  print(a+b)
+  
+  
+}else{
+  
+  print("YA")
+  
+  
+}
+
+
+```
+```{r}
+library(stringr)
+
+num2=12345
+
+for(i in range(length(num2))){
+  
+  if (as.integer(1) %in% num2[i]){
+  
+    print(num2[i])}
+  else{
+    
+    print("False")
+  }
+
+  }
+
+
+
+```
+
+
