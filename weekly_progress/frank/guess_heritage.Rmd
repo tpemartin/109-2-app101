@@ -1,0 +1,103 @@
+---
+title: "Guess heritage"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# download data
+```{r}
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+```
+
+# randomly select 4 heritage
+```{r}
+heritages_index <- sample(1:982,4,replace = F)
+```
+
+# read the 1st heritage photo 
+```{r}
+library(OpenImageR)
+imgX <- {
+        # 取得古蹟的圖片網址
+        targetUrl <- heritageData$representImage[[heritages_index[1]]] 
+        targetUrlencoded <- URLencode(targetUrl)
+        download.file(targetUrlencoded,paste0(heritageData$caseName[[heritages_index[1]]],".jpg"))
+        readImage(paste0(heritageData$caseName[[heritages_index[1]]],".jpg"))
+} 
+```
+
+# create heritage photo puzzle based on user defined difficulty level (easy=3x3, medium=5x5, difficult=9x9)
+```{r}
+library(purrr)
+levels <- c("easy" = 3 , "medium" = 5 , "hard" = 9)
+lv     <- rstudioapi::showPrompt(title = "請選擇難度" ,
+                                 message = paste0("1. easy ",
+                                                  "2. medium ",
+                                                  "3. hard "),
+                                 default = "")
+puzzle<-function(level){
+              if(nrow(imgX) %% level != 0) imgX = imgX[1:(nrow(imgX) - nrow(imgX) %% level),,]
+              if(ncol(imgX) %% level != 0) imgX = imgX[,1:(ncol(imgX) - ncol(imgX) %% level),]
+              rows  <-  map(
+                             1:level,    
+                             ~{
+                                (((.x-1)*nrow(imgX)/level)+1) : (.x*nrow(imgX)/level)
+                              }
+                        )
+              cols  <-  map(
+                             1:level,    
+                             ~{
+                                (((.x-1)*ncol(imgX)/level)+1) : (.x*ncol(imgX)/level)
+                             }
+                        )
+              rows_order <- sample(1:level,level,replace = F)
+              cols_order <- sample(1:level,level,replace = F)
+              newPicture <- array(vector("numeric",length(imgX)),dim=c(nrow(imgX),ncol(imgX),3))
+              for(ii in 1:level){
+                 for(jj in 1:level){
+                     newPicture[rows[[ii]],cols[[jj]],] <-         
+                                imgX[rows[[rows_order[ii]]],cols[[cols_order[jj]]],]
+                 }
+              }
+              return(newPicture)
+        }      
+writeImage(puzzle(levels[as.integer(lv)]),"jigsaw.jpg")
+```
+
+# let user select which one is the right answer
+# tell user it's correct or not
+```{r}
+order <- sample(1:4,4,replace = F)
+guess_order <- c (  heritages_index[order[1]],
+                    heritages_index[order[2]],
+                    heritages_index[order[3]],
+                    heritages_index[order[4]])
+guess_heritage <- function(title = "請輸入選項編號"){
+        answer <- rstudioapi::showPrompt(title = title ,
+                                         message =paste( "1. ",heritageData$caseName[guess_order[1]],
+                                                         "2. ",heritageData$caseName[guess_order[2]],
+                                                         "3. ",heritageData$caseName[guess_order[3]],
+                                                         "4. ",heritageData$caseName[guess_order[4]]
+                                                       ),  
+                                         default ="")
+        if(guess_order[as.integer(answer)] == heritages_index[1]){
+           print("Correct!!")
+        }else{
+           print("Wrong!!")
+           title <- "Wrong! 再猜一次"
+           guess_heritage(title)
+        }
+}        
+```
+
+# execute guess_heritage
+```{r}
+guess_heritage()
+```
+
+
+  * `rstudioapi::showPrompt()` 會跳出要使用者輸入。

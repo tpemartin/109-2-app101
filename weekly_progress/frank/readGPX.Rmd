@@ -33,11 +33,21 @@ Note that the `echo = FALSE` parameter was added to the code chunk to prevent pr
 
 ```{r}
 
+
+# 引入套件
+
+# readGPX() 在 plotKML 內
+
+
+
 library(plotKML)
 
 library(ggplot2)
 
 library(ggmap)
+
+
+#  此 gpx 檔案內只有tracks (tracks 和 routes 相同，但tracks多了時間)
 
 
 gpx <- readGPX("2021_04_10_18_43_21 (1).gpx",metadata=F,bounds=F,waypoints=F,tracks=T,routes=T)
@@ -51,8 +61,6 @@ real_tracks$lat
 pcp_lon <- c(max(real_tracks$lon),min(real_tracks$lon))
 
 pcp_lat <- c(max(real_tracks$lat),min(real_tracks$lat))
-
-
 
 
 
@@ -72,7 +80,12 @@ purl("readGPX.Rmd")
 
 
 ```{r}
- library(ggmap)
+
+
+# 需先申請 Google Cloud Platform (key=使用者授權密碼)
+
+library(ggmap)
+
 register_google(key = "AIzaSyB_DrrjWoHeX7IGVmhe8Dh_6t9_PDWcuxU", write = TRUE) 
 
 
@@ -100,10 +113,15 @@ ggmap(tw.map)
 
 ```{r}
 has_google_key()
+
 ```
 
 
 ```{r}
+
+# 不太確定qbbox功能
+
+
 library(RgoogleMaps)
 
 test_geo <- qbbox(real_tracks$lat,real_tracks$lon)
@@ -113,6 +131,7 @@ print(test_geo)
 
 
 ```
+
 
 
 
@@ -131,6 +150,7 @@ bb = qbbox(my.lat, my.lon)
  
 print(bb)
 ```
+
 ```{r}
 
 
@@ -140,7 +160,11 @@ print(bb)
 
 # cbind : 以 column 順序排列
 
+
+track_sanxia <- GetMap.bbox(test_geo$lonR,test_geo$latR,destfile="trackbook1.png",maptype="roadmap")
+
 track_sanxia <- GetMap.bbox(test_geo$lonR,test_geo$latR,destfile="trackbook1.png",maptype="roadmap",zoom=20)
+
 
 Mark_place <- cbind.data.frame(lat=real_tracks$lat,lon=real_tracks$lon)
 
@@ -149,6 +173,28 @@ View(Mark_place)
 ```
 
 ```{r}
+
+
+#加入標記
+
+# cex : 設定座標點大小
+
+# col : 設定座標點顏色
+
+#  col 預設值:  "black"   "red"     "green3"  "blue"  "cyan"
+#               "magenta" "yellow"  "gray"
+
+
+#  pcp: 資料點符號 (1-25)
+
+trace_Map <- PlotOnStaticMap(track_sanxia,lat=Mark_place[,"lat"],lon=Mark_place[,"lon"],destfile="tracebook1.png",cex=1.5,pch=11,col=1:8,Fun=lines,add=F,lwd=2
+)
+
+
+# 在原有圖上新增藍線
+
+trace_map <- PlotOnStaticMap(track_sanxia, lat=Mark_place[,"lat"],lon=Mark_place[,"lon"],destfile="tracebook1.png",col="Blue",add=T,lwd=4,FUN=lines)
+
 trace_Map <- PlotOnStaticMap(track_sanxia,lat=Mark_place[,"lat"],lon=Mark_place[,"lon"],destfile="tracebook1.png",cex=1,pch=25,col=1:8,Fun=lines,add=F,lwd=2
 )
 
@@ -162,8 +208,6 @@ trace_map <- PlotOnStaticMap(track_sanxia, lat=Mark_place[,"lat"],lon=Mark_place
 
 
 
-
-```
 
 
 
@@ -194,9 +238,5 @@ pch=20, col=1:4, add=F)
 tmp <- PlotOnStaticMap(MyMap, lat = My.markers[,"lat"], lon = My.markers[,"lon"], col="blue",
 add=T, FUN = lines, lwd = 2)
 
-
-
-
-```
 
 

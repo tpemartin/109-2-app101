@@ -24,6 +24,39 @@ library(magick)
 magick::image_read(targetUrlencoded) -> imgX
 imgX
 ```
+#切割圖片
+```{r}
+##取長寬
+a<-image_info(imgX)
+width <- a$width
+height <- a$height
+
+
+##分成四部分
+right_up <-image_crop(imgX,"512X341+512+0") #右上
+
+right_down <- image_crop(imgX,"512X341+512+341") #右下
+
+left_up <- image_crop(imgX,"512X341") #左上
+
+left_down <- image_crop(imgX,"512X341+0+314") #左下
+
+NewPic <- c(left_up,left_down,right_up,right_down)
+```
+
+```{r}
+#隨機打亂
+num <- sample(NewPic,4,FALSE)
+
+#黏貼
+a <- image_append(num[1:2],stack=TRUE)
+b <- image_append(num[3:4],stack=TRUE)
+Puzzle <- image_append(c(a,b))
+
+Puzzle
+```
+
+
 
 ## Magick
 
