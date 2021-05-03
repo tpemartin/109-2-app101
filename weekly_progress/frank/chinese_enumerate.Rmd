@@ -59,10 +59,10 @@ library(stringr)
 library(glue)
 library(purrr)
 {   
+    chineseNumber1_2_char <- paste0(chineseNumber1,chineseNumber2)
     pattern1 <-glue::glue("(?<=[十拾])[",chineseNumber1_2_char,"]")
     pattern2 <-glue::glue("[",chineseNumber1_2_char,"](?=[十拾])")
     pattern3 <-glue::glue("(?<=)[十拾]")
-    chineseNumber1_2_char <- paste0(chineseNumber1,chineseNumber2)
     is.integer0 <- function(x){
        return(is.integer(x) && length(x)==0)
     }
