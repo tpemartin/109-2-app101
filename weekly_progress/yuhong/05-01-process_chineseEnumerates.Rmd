@@ -1,0 +1,360 @@
+---
+title: "rank chinese number"
+output: html_document
+---
+
+It is common to rank chinese number 一～十，壹～拾
+
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+```
+
+It would be nice that you can process the following 
+```{r}
+fct_numbers <- factor(c("一","五","七", "參拾參","五十七","拾壹"))
+oldLevels <- levels(fct_numbers)
+oldLevels
+```
+so that its level sequence will be 
+```{r}
+c("一","五","七","拾壹", "參拾參","五十七")
+```
+without using
+```{r}
+levels(fct_numbers) <- c("一","五","七","拾壹", "參拾參","五十七") # OR
+fct_numbers <- factor(c("一","五","七", "參拾參","五十七","拾壹"), 
+                      levels = c("一","五","七","拾壹", "參拾參","五十七")
+)
+```
+
+In other words, your algorithm should take these three symbols:
+
+  * `chineseNumber1_char`, `chineseNumber2_char`, `oldLevels`
+  
+
+and come out 
+
+  * `newLevels`
+
+which is a character with correct order. (Imagine that oldLevels can be any randomly given string of chinese number characters.)
+
+For simplicity, we assume that `oldLevels` elements are between 0 and 99 in Chinese characters.
+
+
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹")
+```
+
+
+```{r}
+library(stringr)
+library(glue)
+library(purrr)
+
+new1 <- oldLevels[str_length(oldLevels)==1] # 一、七、五
+new2 <- oldLevels[str_length(oldLevels)==2] # 拾壹
+new3 <- oldLevels[str_length(oldLevels)==3] # 五十七、參拾參
+
+new3_1 <- str_subset(new3,pattern = "十") # 五十七
+new3_2 <- str_subset(new3,pattern = "拾") # 參拾參
+
+new3_1first <- unlist(str_split(new3_1,"十"))[length(new3_1)/2] # 五
+new3_2first <- unlist(str_split(new3_2,"拾"))[1] # 參
+
+factor()
+
+factor(new3,
+       levels = 
+       )
+```
+
+  
+```{r}
+library(stringr)
+library(glue)
+library(purrr)
+
+
+
+lenth_oldLevel <- map(
+  list(1:5),
+  ~{length(oldLevels[.x])})
+
+lenth_oldLevel
+
+length(oldLevels[5])
+
+oldLevels[length==3]
+
+pattern_10 <- str_detect(
+    oldLevels,
+    pattern <- "[十拾]")
+  
+OverTen <- oldLevels[pattern_10]
+LessThanTen <- oldLevels[!pattern_10]
+
+LessThanTen_pattern <- 
+unlist(
+  map(
+  list(1,2,3,4,5,6,7,8,9,10,11),
+  ~{c(chineseNumber1_char[.x],chineseNumber2_char[.x])}
+))
+LessThanTen_pattern[1]<- ""
+LessThanTen <- factor(LessThanTen, levels = LessThanTen_pattern)
+
+
+```
+  
+  
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹")
+
+{ # Your algorithm
+  
+library(stringr)
+library(glue)
+library(purrr)
+
+pattern_10 <- str_detect(
+    oldLevels,
+    pattern <- "[十拾]")
+  
+TenToNineNine <- oldLevels[pattern_10]
+LessThanTen <- oldLevels[!pattern_10]
+
+# 0 ~ 99 排序
+
+units <- map(
+  list(1,2,3,4,5,6,7,8,9,10),
+     ~{
+ 
+tens <- map(
+  list(0,2,3,4,5,6,7,8,9,10,11),
+     ~{
+       c(
+          chineseNumber1_char[.x],
+          "十",
+          map(
+            list(2,3,4,5,6,7,8,9,10),
+            ~{c(chineseNumber1_char[.x])})
+        )
+      }  )
+
+tens <- c()
+
+
+w <- map(
+  list(0,1,2,3,4,5,6,7,8,9),
+
+tens <- map(
+  list(0,3,4,5,6,7,8,9,10),
+     ~{c(chineseNumber1_char[.x],"十",chineseNumber2_char[.x],"拾")}  )
+
+unlist_tens <- unlist(tens)
+pattern_tens <- list()
+map(
+  list(1:10),
+~{pattern_tens[.x] <- paste(unlist_tens[(.x*4-3):(.x*4)],collapse = "")}
+)
+```
+
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹")
+
+library(stringr)
+library(glue)
+library(purrr)
+
+# 十位數
+tens1 <- map(
+  list(3,4,5,6,7,8,9,10),
+  ~{paste(chineseNumber1_char[.x], "十", sep = "")}) # 二十、三十、...
+
+tens2 <- map(
+  list(3,4,5,6,7,8,9,10),
+  ~{paste(chineseNumber2_char[.x], "拾", sep = "")}) # 貳拾、參拾、...
+
+# 個位數
+
+`0` <- map(
+  list(1,2,3,4,5,6,7,8,9,10,11),
+  ~{c(
+    paste(chineseNumber1_char[.x]),
+    paste(chineseNumber2_char[.x]))}
+)
+`0` <- unlist(`0`)
+`0` <- `0`[2:22]
+
+{
+`11` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste("十", chineseNumber1_char[.x], sep = ""),
+       paste("拾", chineseNumber2_char[.x], sep = "") )}  )
+`11` <- unlist(`11`)
+} # 十一、拾壹
+
+{
+`21` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[1], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[1], chineseNumber2_char[.x], sep = "") )}  )
+`21` <- unlist(`21`)
+}
+
+{
+`31` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[2], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[2], chineseNumber2_char[.x], sep = "") )}  )
+`31` <- unlist(`31`)
+}
+
+{
+`41` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[3], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[3], chineseNumber2_char[.x], sep = "") )}  )
+`41` <- unlist(`41`)
+}
+
+{
+`51` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[4], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[4], chineseNumber2_char[.x], sep = "") )}  )
+`51` <- unlist(`51`)
+}
+
+{
+`61` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[5], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[5], chineseNumber2_char[.x], sep = "") )}  )
+`61` <- unlist(`61`)
+}
+
+{
+`71` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[6], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[6], chineseNumber2_char[.x], sep = "") )}  )
+`71` <- unlist(`71`)
+}
+
+{
+`81` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[7], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[7], chineseNumber2_char[.x], sep = "") )}  )
+`81` <- unlist(`81`)
+}
+
+{
+`91` <- 
+  map(
+  list(2,3,4,5,6,7,8,9,10),
+     ~{c(
+       paste(tens1[8], chineseNumber1_char[.x], sep = ""),
+       paste(tens2[8], chineseNumber2_char[.x], sep = "") )}  )
+`91` <- unlist(`91`)
+}
+
+# 世紀大合併
+
+levels99 <- list(`0`,
+                 `11`, tens1[1], tens2[1],
+                 `21`, tens1[2], tens2[2],
+                 `31`, tens1[3], tens2[3],
+                 `41`, tens1[4], tens2[4],
+                 `51`, tens1[5], tens2[5],
+                 `61`, tens1[6], tens2[6],
+                 `71`, tens1[7], tens2[7],
+                 `81`, tens1[8], tens2[8],
+                 `91`)
+levels99 <- unlist(levels99) # 99*2 + "零" = 199
+
+# factor
+
+newLevels <- factor(
+  oldLevels,
+  levels = levels99
+)
+```
+
+
+
+un11 <- unlist(`11`)
+pattern11 <- list()
+
+pattern11 <- map(
+  list(1:18),
+    ~{paste(un11[(2*.x)-1],un11[2*.x])})
+
+z <- map(
+  list(0:9),
+     ~{
+       chineseNumber1_char[.x+1]
+      }  )
+
+
+library(purrr)
+test <- map(
+c
+  ~{
+  list(0:9)
+      ~{
+      .x <- chineseNumber1_char[.x+1]|chineseNumber2_char[.x+1]
+      }
+    }
+  
+)
+
+test
+  
+
+  
+    newLevels <- factor(
+    oldLevels,
+    levels = c(chineseNumber1_char, chineseNumber2_char[2:10]),
+    ordered = TRUE
+  )
+  
+  
+}
+
+
+newLevels 
+```
+
+
