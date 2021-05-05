@@ -1,0 +1,41 @@
+---
+title: "時光縮影: part 2"
+output: html_document
+---
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+```
+
+## 處理非正規書寫西元年份
+
+### 民國
+
+```{r}
+purrr::map(
+  list_heritageYears,
+  ~{
+    stringr::str_subset(.x, "民國")
+  }
+) -> list_minguo
+table(unlist(list_minguo))
+```
+
+### 中文西元年份
+
+```{r}
+pattern <- "一[O一二三四五六七八九十]{3}"
+purrr::map(
+  list_heritageYears,
+  ~{
+    stringr::str_subset(.x, pattern)
+  }
+) -> list_westernYearsInChineseWriting
+table(unlist(list_westernYearsInChineseWriting))
+```
+
+### 日治時代
+
+  * 替換成"1895-1945"
+

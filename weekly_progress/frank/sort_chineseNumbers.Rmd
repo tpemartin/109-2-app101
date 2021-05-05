@@ -1,0 +1,51 @@
+---
+title: "sort_chineseNumbers"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#' Sorting chinese numbers
+#'
+#' @param origin A character vector of Chinese numbers
+#' @param descreasing A logical (default=F). TRUE means the return result should order numbers from the largest to the smallest
+#'
+#' @return A sorted vector of origin input
+#' @export
+#'
+#' @examples None.
+library(stringr)
+origin  = c("玖","三十柒","玖拾二","參拾三","五十七","五","拾壹","十捌","陸十")
+origin2 = c("一", "七", "五", "五十七", "參拾參", "拾壹")
+sort_chineseNumbers <- function(origin, decreasing=F){
+  chineseNumber1 <- "零一二三四五六七八九十"
+  chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+  chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+  chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+  #  陸十 參拾三
+  #  610  3103
+  origin2 <- origin
+  origin[str_length(origin)==2] <- paste0(origin[str_length(origin)==2],"零")
+  num_chr1 <- c("0","1","2","3","4","5","6","7","8","9","10")
+  num_chr2 <- c("0","1","2","3","4","5","6","7","8","9","10")
+  names(num_chr1) <- chineseNumber1_char
+  names(num_chr2) <- chineseNumber2_char
+  origin_num  <- str_replace_all(origin,num_chr1)
+  origin_num  <- as.numeric(str_replace_all(origin_num,num_chr2))
+  names(origin_num) <- origin2
+  if(decreasing){
+     sorted_origin <-  names(sort(origin_num,T))
+  }else{
+     sorted_origin <-  names(sort(origin_num))
+  }
+  return(sorted_origin)
+}
+sort_chineseNumbers(origin,T)
+sort_chineseNumbers(origin,F)
+sort_chineseNumbers(origin2,T)
+sort_chineseNumbers(origin2,F)
+```
+
