@@ -1,0 +1,109 @@
+---
+title: "chinese_enumerates"
+author: "frank"
+date: "2021年5月1日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+```
+
+It would be nice that you can process the following 
+```{r}
+fct_numbers <- factor(c("一","五","七", "參拾參","五十七","拾壹"))
+oldLevels <- levels(fct_numbers)
+oldLevels
+```
+so that its level sequence will be 
+```{r}
+c("一","五","七","拾壹", "參拾參","五十七")
+```
+without using
+```{r}
+levels(fct_numbers) <- c("一","五","七","拾壹", "參拾參","五十七") # OR
+fct_numbers <- factor(c("一","五","七", "參拾參","五十七","拾壹"), 
+                      levels = c("一","五","七","拾壹", "參拾參","五十七")
+)
+```
+
+In other words, your algorithm should take these three symbols:
+
+  * `chineseNumber1_char`, `chineseNumber1_char`, `oldLevels`
+  
+
+and come out 
+
+  * `newLevels`
+
+which is a character with correct order. (Imagine that oldLevels can be any randomly given string of chinese number characters.)
+
+For simplicity, we assume that `oldLevels` elements are between 0 and 99 in Chinese characters.
+
+  
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹")
+oldLevels <- c("玖","三十柒","玖拾二","參拾三","五十七","五","拾壹","十捌","陸十")
+library(stringr)
+library(glue)
+library(purrr)
+{   
+    chineseNumber1_2_char <- paste0(chineseNumber1,chineseNumber2)
+    pattern1 <-glue::glue("(?<=[十拾])[",chineseNumber1_2_char,"]")
+    pattern2 <-glue::glue("[",chineseNumber1_2_char,"](?=[十拾])")
+    pattern3 <-glue::glue("(?<=)[十拾]")
+    is.integer0 <- function(x){
+       return(is.integer(x) && length(x)==0)
+    }
+    map(
+         seq_along(oldLevels),
+         ~{
+            if(str_detect(oldLevels[.x],pattern=pattern1) || str_detect(oldLevels[.x],pattern=pattern2)){
+                  sum = 0
+                  if(str_detect(oldLevels[.x],pattern3)){
+                     sum = sum+10
+                  }
+                  if(str_detect(oldLevels[.x],pattern=pattern1)){
+                      if(is.integer0(str_which(str_extract(oldLevels[.x],pattern=pattern1),chineseNumber1_char)))
+                      {
+                          sum = sum+str_which(str_extract(oldLevels[.x],pattern=pattern1),chineseNumber2_char)
+                      }else{
+                          sum = sum+str_which(str_extract(oldLevels[.x],pattern=pattern1),chineseNumber1_char)
+                      } 
+                  }
+                  if(str_detect(oldLevels[.x],pattern=pattern2)){
+                      if(is.integer0(str_which(str_extract(oldLevels[.x],pattern=pattern2),chineseNumber1_char)))
+                      {
+                          sum = sum+10*str_which(str_extract(oldLevels[.x],pattern=pattern2),chineseNumber2_char)
+                      }else{
+                          sum = sum+10*str_which(str_extract(oldLevels[.x],pattern=pattern2),chineseNumber1_char)
+                      } 
+                  }
+            }else{
+                 if(is.integer0(str_which(oldLevels[.x],chineseNumber1_char)))
+                 {
+                         sum = str_which(oldLevels[.x],chineseNumber2_char)
+                 }else{
+                         sum = str_which(oldLevels[.x],chineseNumber1_char)
+                 } 
+            }
+            sum
+         }
+     )  -> oldlevel_to_number
+    unlist(oldlevel_to_number) -> oldlevel_to_number
+    names(oldlevel_to_number) <- oldLevels
+    names(sort(oldlevel_to_number))
+} -> newLevels
+newLevels 
+```
