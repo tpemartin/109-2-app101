@@ -1,0 +1,579 @@
+---
+title: "num_year"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+```
+
+
+```{r}
+# heritageData 1  (字元捲帶)
+
+library(stringr)
+heritage1 <- heritageData[1,]
+
+standard="[1](0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)"
+
+ans_1 <- str_extract_all(heritage1$pastHistory,pattern=standard)
+
+ans_1
+
+
+```
+
+```{r}
+
+# 若輸入的年份在 heritageData_1 內，即會顯示地點
+
+
+default=0
+
+library(stringr)
+library(rstudioapi)
+
+chosen_year2=showPrompt("年份輸入","請輸入年份",1982)
+
+for (i in heritage1$pastHistory)
+  default=default+1
+  print(default)
+  
+  {
+  if (str_detect(i,chosen_year2)){
+    
+    print(heritage1$caseName[default])
+    
+  }
+    
+}
+
+```
+```{r}
+
+
+
+library(stringr)
+
+ans_heritageData1 <- str_extract_all(heritage1$pastHistory,pattern=standard)
+
+
+unlist_heritageData1 <- unlist(ans_heritageData1)
+
+unlist_heritageData1
+
+unlist_heritageData1[[4]]
+
+
+length(unlist_heritageData1)
+
+
+
+```
+
+
+
+
+
+
+
+
+```{r}
+
+# unlist 全部 heritageData 的年份
+
+library(stringr)
+
+ans_heritageData <- str_extract_all(heritageData$pastHistory,pattern=standard)
+
+
+unlist_heritageData <- unlist(ans_heritageData)
+
+unlist_heritageData
+
+
+
+```
+
+```{r}
+
+# 做年份間隔   ( 使用 cut () )
+
+library(stringr)
+
+year_interval=cut(as.integer(unlist_heritageData1),breaks=c(1200,1400,1600,1800,2000))
+
+
+year_interval
+
+
+
+
+```
+
+
+
+
+
+
+```{r}
+# heritage1  年份區間
+
+library(stringr)
+
+library(rstudioapi)
+
+count=0
+
+unlist_heritageData1=as.integer(unlist_heritageData1)
+
+
+chosen_year=showPrompt("年份輸入","請輸入一個年份",1673)
+
+for (i in unlist_heritageData1){
+  count=count+1
+  
+ if (str_detect(unlist_heritageData1[count],pattern=chosen_year)){
+
+  print(paste0(year_interval[[count]]," ---> ",heritageData$caseName[[1]],sep=' '))
+  
+   
+ }
+  
+} 
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+
+# test heritage25 測試能否跑出正確地點
+
+default=0
+
+library(stringr)
+library(rstudioapi)
+
+chosen_year3=showPrompt("年份輸入","請輸入年份",1982)
+
+for (i in heritage25$pastHistory)
+  
+  default=default+1
+  
+  {
+  if (str_detect(i,chosen_year3)){
+    
+  
+    print(heritage25$caseName[default])
+    
+  }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```{r}
+
+# 取出  heritageData_25  年份
+
+library(stringr)
+
+heritage25=heritageData[25,]
+
+ans_25=str_extract_all(heritage25$pastHistory,pattern=standard)
+
+ans_25
+
+
+```
+
+
+
+
+
+
+
+```{r}
+
+# heritage 25 年份區間
+
+unlist_heritageData25=as.integer(unlist(ans_25))
+
+year_interval_25=cut(unlist_heritageData25,breaks=c(1200,1400,1600,1800,2000))
+
+chosen_year=showPrompt("年份輸入","請輸入一個年份",1673)
+
+count=0
+
+for (i in unlist_heritageData25){
+  
+  count=count+1
+  
+  if (str_detect(unlist_heritageData25[[count]],pattern=chosen_year)){
+    
+    print(paste0(year_interval_25[[count]]," --> ",heritage25$caseName[[1]]))
+    
+  }
+  
+}
+
+
+```
+
+
+
+```{r}
+library(stringr)
+
+ans_heritageData <- str_extract_all(heritageData$pastHistory,pattern=standard)
+
+
+unlist_heritageData <- unlist(ans_heritageData)
+
+unlist_heritageData
+
+
+
+```
+
+
+```{r}
+
+unlist_heritageData=as.integer(unlist_heritageData)
+
+year_interval_all=cut(unlist_heritageData,breaks=c(1200,1400,1600,1800,2000))
+
+year_interval_all
+
+
+
+
+
+
+```
+
+```{r}
+
+# heritageData 年份區間 ( 全部資料 )
+
+
+# 輸入年份後 ----> 輸出 1. 該 pastHistory 中的起始年份(少部分不一定)  2. 該 pastHistory 中的起始年份的年份區間 ( 1 間隔 = 200 年)
+
+
+# min_year  ---> 先整理出來的 DataFrame (跟heritageData 的 rows 數量相等)
+
+library(rstudioapi)
+count=0
+
+year_count=0
+
+chosen_year=showPrompt("年份輸入","請輸入一個年份區間",1673)
+
+
+for (i in heritageData$pastHistory ) {
+  
+  count=count+1
+
+  
+  
+  
+  if (str_detect(i,pattern=chosen_year) ){
+    
+  
+    print(paste0(c(min_year[count,])," --> ",heritageData$caseName[[count]]))
+    
+    
+  }
+  
+  
+  if (str_detect(i,pattern=chosen_year) & min_year[count,]<1400){
+    
+    print(paste0("(1.2e+03,1.4e+03] "," --> ",heritageData$caseName[[count]]))
+    
+    
+    
+    
+    
+  }
+  
+  if (str_detect(i,pattern=chosen_year) & min_year[count,]>1400 & min_year[count,]<=1600){
+    
+    
+     print(paste0("(1.4e+03,1.6e+03] "," --> ",heritageData$caseName[[count]]))
+    
+  }
+  
+  
+   if (str_detect(i,pattern=chosen_year) & min_year[count,]<=1800 & min_year[count,]>1600){
+    
+    
+     print(paste0("(1.6e+03,1.8e+03] "," --> ",heritageData$caseName[[count]]))
+    
+   }
+  
+  
+   if (str_detect(i,pattern=chosen_year) & min_year[count,]<=2000 & min_year[count,]>1800){
+    
+    
+     print(paste0("(1.8e+03,2.0e+03] "," --> ",heritageData$caseName[[count]]))
+    
+  }
+  
+  
+  
+}
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+```{r}
+# 可查出選擇年份對應到的古蹟
+
+library(rstudioapi)
+library(stringr)
+
+chosen_year2=showPrompt("年份輸入","請輸入年份",1980)
+
+default=0
+
+for(i in heritageData$pastHistory){
+  
+  default=default+1
+  
+  
+  if(str_detect(i,chosen_year)){
+    
+  
+    
+    print(heritageData$caseName[default])
+    
+  }
+  
+  
+}
+```
+
+
+
+
+```{r}
+library(knitr)
+
+purl("year_track.Rmd")
+```
+
+
+```{r}
+
+c19=0
+
+for (j in year_interval_all){
+  
+  
+  
+  c19=c19+1
+  
+  
+  
+}
+
+
+print(c19)
+
+
+print(length(year_interval_all))
+
+
+```
+```{r}
+
+
+heritageData$pastHistory[1:982]
+
+
+
+
+
+```
+
+```{r}
+
+library(stringr)
+
+heritage25=heritageData[25,]
+
+ans_25=str_extract_all(heritage25$pastHistory,pattern=standard)
+
+ans_25
+
+
+```
+
+
+
+
+```{r}
+library(stringr)
+
+count_3=0
+
+for ( i in heritageData$pastHistory){
+  
+  count_3=count_3+1
+  
+  heritage_all=heritageData[count_3,]
+  
+  ans_all=str_extract_all(heritage_all$pastHistory,pattern=standard)
+  
+  
+}
+
+
+```
+
+
+
+
+```{r}
+
+
+heritage_all=str_extract_all(heritageData$pastHistory,pattern=standard)
+
+
+heritage_all
+
+
+```
+
+```{r}
+
+#  不.........不要......土法......煉鋼......不然....會......會....很....痛苦.........
+
+
+hr=heritage_all
+
+min_year=cbind.data.frame(year=c(min(hr[[1]]),min(hr[[2]]),min(hr[[3]]),min(hr[[4]]),min(hr[[5]]),min(hr[[6]]),min(hr[[7]]),min(hr[[8]]),min(hr[[9]]),min(hr[[10]]),min(hr[[11]]),min(hr[[12]]),min(hr[[13]]),min(hr[[14]]),min(hr[[15]]),min(hr[[16]]),min(hr[[17]]),min(hr[[18]]),min(hr[[19]]),min(hr[[20]]),min(hr[[21]]),min(hr[[22]]),min(hr[[23]]),min(hr[[24]]),min(hr[[25]]),min(hr[[26]]),min(hr[[27]]),min(hr[[28]]),min(hr[[29]]),min(hr[[30]]),min(hr[[31]]),min(hr[[32]]),min(hr[[33]]),min(hr[[34]]),min(hr[[35]]),min(hr[[36]]),min(hr[[37]]),min(hr[[38]]),min(hr[[39]]),min(hr[[40]]),min(hr[[41]]),min(hr[[42]]),min(hr[[43]]),min(hr[[44]]),min(hr[[45]]),min(hr[[46]]),min(hr[[47]]),min(hr[[48]]),min(hr[[49]]),min(hr[[50]]),min(hr[[51]]),min(hr[[52]]),min(hr[[53]]),min(hr[[54]]),min(hr[[55]]),min(hr[[56]]),min(hr[[57]]),min(hr[[58]]),min(hr[[59]]),min(hr[[60]]),min(hr[[61]]),min(hr[[62]]),min(hr[[63]]),min(hr[[64]]),min(hr[[65]]),min(hr[[66]]),min(hr[[67]]),min(hr[[68]]),min(hr[[69]]),min(hr[[70]]),min(hr[[71]]),min(hr[[72]]),min(hr[[73]]),min(hr[[74]]),min(hr[[75]]),min(hr[[76]]),min(hr[[77]]),min(hr[[78]]),min(hr[[79]]),min(hr[[80]]),min(hr[[81]]),min(hr[[82]]),min(hr[[83]]),min(hr[[84]]),min(hr[[85]]),min(hr[[86]]),min(hr[[87]]),min(hr[[88]]),min(hr[[89]]),min(hr[[90]]),min(hr[[91]]),min(hr[[92]]),min(hr[[93]]),min(hr[[94]]),min(hr[[95]]),min(hr[[96]]),min(hr[[97]]),min(hr[[98]]),min(hr[[99]]),min(hr[[100]]),min(hr[[101]]),min(hr[[102]]),min(hr[[103]]),min(hr[[104]]),min(hr[[105]]),min(hr[[106]]),min(hr[[107]]),min(hr[[108]]),min(hr[[109]]),min(hr[[110]]),min(hr[[111]]),min(hr[[112]]),min(hr[[113]]),min(hr[[114]]),min(hr[[115]]),min(hr[[116]]),min(hr[[117]]),min(hr[[118]]),min(hr[[119]]),min(hr[[120]]),min(hr[[121]]),min(hr[[122]]),min(hr[[123]]),min(hr[[124]]),min(hr[[125]]),min(hr[[126]]),min(hr[[127]]),min(hr[[128]]),min(hr[[129]]),min(hr[[130]]),min(hr[[131]]),min(hr[[132]]),min(hr[[133]]),min(hr[[134]]),min(hr[[135]]),min(hr[[136]]),min(hr[[137]]),min(hr[[138]]),min(hr[[139]]),min(hr[[140]]),min(hr[[141]]),min(hr[[142]]),min(hr[[143]]),min(hr[[144]]),min(hr[[145]]),min(hr[[146]]),min(hr[[147]]),min(hr[[148]]),min(hr[[149]]),min(hr[[150]]),min(hr[[151]]),min(hr[[152]]),min(hr[[153]]),min(hr[[154]]),min(hr[[155]]),min(hr[[156]]),min(hr[[157]]),min(hr[[158]]),min(hr[[159]]),min(hr[[160]]),min(hr[[161]]),min(hr[[162]]),min(hr[[163]]),min(hr[[164]]),min(hr[[165]]),min(hr[[166]]),min(hr[[167]]),min(hr[[168]]),min(hr[[169]]),min(hr[[170]]),min(hr[[171]]),min(hr[[172]]),min(hr[[173]]),min(hr[[174]]),min(hr[[175]]),min(hr[[176]]),min(hr[[177]]),min(hr[[178]]),min(hr[[179]]),min(hr[[180]]),min(hr[[181]]),min(hr[[182]]),min(hr[[183]]),min(hr[[184]]),min(hr[[185]]),min(hr[[186]]),min(hr[[187]]),min(hr[[188]]),min(hr[[189]]),min(hr[[190]]),min(hr[[191]]),min(hr[[192]]),min(hr[[193]]),min(hr[[194]]),min(hr[[195]]),min(hr[[196]]),min(hr[[197]]),min(hr[[198]]),min(hr[[199]])))
+
+
+
+year_199=c(min(hr[[1]]),min(hr[[2]]),min(hr[[3]]),min(hr[[4]]),min(hr[[5]]),min(hr[[6]]),min(hr[[7]]),min(hr[[8]]),min(hr[[9]]),min(hr[[10]]),min(hr[[11]]),min(hr[[12]]),min(hr[[13]]),min(hr[[14]]),min(hr[[15]]),min(hr[[16]]),min(hr[[17]]),min(hr[[18]]),min(hr[[19]]),min(hr[[20]]),min(hr[[21]]),min(hr[[22]]),min(hr[[23]]),min(hr[[24]]),min(hr[[25]]),min(hr[[26]]),min(hr[[27]]),min(hr[[28]]),min(hr[[29]]),min(hr[[30]]),min(hr[[31]]),min(hr[[32]]),min(hr[[33]]),min(hr[[34]]),min(hr[[35]]),min(hr[[36]]),min(hr[[37]]),min(hr[[38]]),min(hr[[39]]),min(hr[[40]]),min(hr[[41]]),min(hr[[42]]),min(hr[[43]]),min(hr[[44]]),min(hr[[45]]),min(hr[[46]]),min(hr[[47]]),min(hr[[48]]),min(hr[[49]]),min(hr[[50]]),min(hr[[51]]),min(hr[[52]]),min(hr[[53]]),min(hr[[54]]),min(hr[[55]]),min(hr[[56]]),min(hr[[57]]),min(hr[[58]]),min(hr[[59]]),min(hr[[60]]),min(hr[[61]]),min(hr[[62]]),min(hr[[63]]),min(hr[[64]]),min(hr[[65]]),min(hr[[66]]),min(hr[[67]]),min(hr[[68]]),min(hr[[69]]),min(hr[[70]]),min(hr[[71]]),min(hr[[72]]),min(hr[[73]]),min(hr[[74]]),min(hr[[75]]),min(hr[[76]]),min(hr[[77]]),min(hr[[78]]),min(hr[[79]]),min(hr[[80]]),min(hr[[81]]),min(hr[[82]]),min(hr[[83]]),min(hr[[84]]),min(hr[[85]]),min(hr[[86]]),min(hr[[87]]),min(hr[[88]]),min(hr[[89]]),min(hr[[90]]),min(hr[[91]]),min(hr[[92]]),min(hr[[93]]),min(hr[[94]]),min(hr[[95]]),min(hr[[96]]),min(hr[[97]]),min(hr[[98]]),min(hr[[99]]),min(hr[[100]]),min(hr[[101]]),min(hr[[102]]),min(hr[[103]]),min(hr[[104]]),min(hr[[105]]),min(hr[[106]]),min(hr[[107]]),min(hr[[108]]),min(hr[[109]]),min(hr[[110]]),min(hr[[111]]),min(hr[[112]]),min(hr[[113]]),min(hr[[114]]),min(hr[[115]]),min(hr[[116]]),min(hr[[117]]),min(hr[[118]]),min(hr[[119]]),min(hr[[120]]),min(hr[[121]]),min(hr[[122]]),min(hr[[123]]),min(hr[[124]]),min(hr[[125]]),min(hr[[126]]),min(hr[[127]]),min(hr[[128]]),min(hr[[129]]),min(hr[[130]]),min(hr[[131]]),min(hr[[132]]),min(hr[[133]]),min(hr[[134]]),min(hr[[135]]),min(hr[[136]]),min(hr[[137]]),min(hr[[138]]),min(hr[[139]]),min(hr[[140]]),min(hr[[141]]),min(hr[[142]]),min(hr[[143]]),min(hr[[144]]),min(hr[[145]]),min(hr[[146]]),min(hr[[147]]),min(hr[[148]]),min(hr[[149]]),min(hr[[150]]),min(hr[[151]]),min(hr[[152]]),min(hr[[153]]),min(hr[[154]]),min(hr[[155]]),min(hr[[156]]),min(hr[[157]]),min(hr[[158]]),min(hr[[159]]),min(hr[[160]]),min(hr[[161]]),min(hr[[162]]),min(hr[[163]]),min(hr[[164]]),min(hr[[165]]),min(hr[[166]]),min(hr[[167]]),min(hr[[168]]),min(hr[[169]]),min(hr[[170]]),min(hr[[171]]),min(hr[[172]]),min(hr[[173]]),min(hr[[174]]),min(hr[[175]]),min(hr[[176]]),min(hr[[177]]),min(hr[[178]]),min(hr[[179]]),min(hr[[180]]),min(hr[[181]]),min(hr[[182]]),min(hr[[183]]),min(hr[[184]]),min(hr[[185]]),min(hr[[186]]),min(hr[[187]]),min(hr[[188]]),min(hr[[189]]),min(hr[[190]]),min(hr[[191]]),min(hr[[192]]),min(hr[[193]]),min(hr[[194]]),min(hr[[195]]),min(hr[[196]]),min(hr[[197]]),min(hr[[198]]),min(hr[[199]]))
+
+
+year_300=c(year_199,min(hr[[200]]),min(hr[[201]]),min(hr[[202]]),min(hr[[203]]),min(hr[[204]]),min(hr[[205]]),min(hr[[206]]),min(hr[[207]]),min(hr[[208]]),min(hr[[209]]),min(hr[[210]]),min(hr[[211]]),min(hr[[212]]),min(hr[[213]]),min(hr[[214]]),min(hr[[215]]),min(hr[[216]]),min(hr[[217]]),min(hr[[218]]),min(hr[[219]]),min(hr[[220]]),min(hr[[221]]),min(hr[[222]]),min(hr[[223]]),min(hr[[224]]),min(hr[[225]]),min(hr[[226]]),min(hr[[227]]),min(hr[[228]]),min(hr[[229]]),min(hr[[230]]),min(hr[[231]]),min(hr[[232]]),min(hr[[233]]),min(hr[[234]]),min(hr[[235]]),min(hr[[236]]),min(hr[[237]]),min(hr[[238]]),min(hr[[239]]),min(hr[[240]]),min(hr[[241]]),min(hr[[242]]),min(hr[[243]]),min(hr[[244]]),min(hr[[245]]),min(hr[[246]]),min(hr[[247]]),min(hr[[248]]),min(hr[[249]]),min(hr[[250]]),min(hr[[251]]),min(hr[[252]]),min(hr[[253]]),min(hr[[254]]),min(hr[[255]]),min(hr[[256]]),min(hr[[257]]),min(hr[[258]]),min(hr[[259]]),min(hr[[260]]),min(hr[[261]]),min(hr[[262]]),min(hr[[263]]),min(hr[[264]]),min(hr[[265]]),min(hr[[266]]),min(hr[[267]]),min(hr[[268]]),min(hr[[269]]),min(hr[[270]]),min(hr[[271]]),min(hr[[272]]),min(hr[[273]]),min(hr[[274]]),min(hr[[275]]),min(hr[[276]]),min(hr[[277]]),min(hr[[278]]),min(hr[[279]]),min(hr[[280]]),min(hr[[281]]),min(hr[[282]]),min(hr[[283]]),min(hr[[284]]),min(hr[[285]]),min(hr[[286]]),min(hr[[287]]),min(hr[[288]]),min(hr[[289]]),min(hr[[290]]),min(hr[[291]]),min(hr[[292]]),min(hr[[293]]),min(hr[[294]]),min(hr[[295]]),min(hr[[296]]),min(hr[[297]]),min(hr[[298]]),min(hr[[299]]),min(hr[[300]]))
+
+
+
+year_400=c(year_300,min(hr[[301]]),min(hr[[302]]),min(hr[[303]]),min(hr[[304]]),min(hr[[305]]),min(hr[[306]]),min(hr[[307]]),min(hr[[308]]),min(hr[[309]]),min(hr[[310]]),min(hr[[311]]),min(hr[[312]]),min(hr[[313]]),min(hr[[314]]),min(hr[[315]]),min(hr[[316]]),min(hr[[317]]),min(hr[[318]]),min(hr[[319]]),min(hr[[320]]),min(hr[[321]]),min(hr[[322]]),min(hr[[323]]),min(hr[[324]]),min(hr[[325]]),min(hr[[326]]),min(hr[[327]]),min(hr[[328]]),min(hr[[329]]),min(hr[[330]]),min(hr[[331]]),min(hr[[332]]),min(hr[[333]]),min(hr[[334]]),min(hr[[335]]),min(hr[[336]]),min(hr[[337]]),min(hr[[338]]),min(hr[[339]]),min(hr[[340]]),min(hr[[341]]),min(hr[[342]]),min(hr[[343]]),min(hr[[344]]),min(hr[[345]]),min(hr[[346]]),min(hr[[347]]),min(hr[[348]]),min(hr[[349]]),min(hr[[350]]),min(hr[[351]]),min(hr[[352]]),min(hr[[353]]),min(hr[[354]]),min(hr[[355]]),min(hr[[356]]),min(hr[[357]]),min(hr[[358]]),min(hr[[359]]),min(hr[[360]]),min(hr[[361]]),min(hr[[362]]),min(hr[[363]]),min(hr[[364]]),min(hr[[365]]),min(hr[[366]]),min(hr[[367]]),min(hr[[368]]),min(hr[[369]]),min(hr[[370]]),min(hr[[371]]),min(hr[[372]]),min(hr[[373]]),min(hr[[374]]),min(hr[[375]]),min(hr[[376]]),min(hr[[377]]),min(hr[[378]]),min(hr[[379]]),min(hr[[380]]),min(hr[[381]]),min(hr[[382]]),min(hr[[383]]),min(hr[[384]]),min(hr[[385]]),min(hr[[386]]),min(hr[[387]]),min(hr[[388]]),min(hr[[389]]),min(hr[[390]]),min(hr[[391]]),min(hr[[392]]),min(hr[[393]]),min(hr[[394]]),min(hr[[395]]),min(hr[[396]]),min(hr[[397]]),min(hr[[398]]),min(hr[[399]]),min(hr[[400]]))
+
+
+year_500=c(year_400,min(hr[[401]]),min(hr[[402]]),min(hr[[403]]),min(hr[[404]]),min(hr[[405]]),min(hr[[406]]),min(hr[[407]]),min(hr[[408]]),min(hr[[409]]),min(hr[[410]]),min(hr[[411]]),min(hr[[412]]),min(hr[[413]]),min(hr[[414]]),min(hr[[415]]),min(hr[[416]]),min(hr[[417]]),min(hr[[418]]),min(hr[[419]]),min(hr[[420]]),min(hr[[421]]),min(hr[[422]]),min(hr[[423]]),min(hr[[424]]),min(hr[[425]]),min(hr[[426]]),min(hr[[427]]),min(hr[[428]]),min(hr[[429]]),min(hr[[430]]),min(hr[[431]]),min(hr[[432]]),min(hr[[433]]),min(hr[[434]]),min(hr[[435]]),min(hr[[436]]),min(hr[[437]]),min(hr[[438]]),min(hr[[439]]),min(hr[[440]]),min(hr[[441]]),min(hr[[442]]),min(hr[[443]]),min(hr[[444]]),min(hr[[445]]),min(hr[[446]]),min(hr[[447]]),min(hr[[448]]),min(hr[[449]]),min(hr[[450]]),min(hr[[451]]),min(hr[[452]]),min(hr[[453]]),min(hr[[454]]),min(hr[[455]]),min(hr[[456]]),min(hr[[457]]),min(hr[[458]]),min(hr[[459]]),min(hr[[460]]),min(hr[[461]]),min(hr[[462]]),min(hr[[463]]),min(hr[[464]]),min(hr[[465]]),min(hr[[466]]),min(hr[[467]]),min(hr[[468]]),min(hr[[469]]),min(hr[[470]]),min(hr[[471]]),min(hr[[472]]),min(hr[[473]]),min(hr[[474]]),min(hr[[475]]),min(hr[[476]]),min(hr[[477]]),min(hr[[478]]),min(hr[[479]]),min(hr[[480]]),min(hr[[481]]),min(hr[[482]]),min(hr[[483]]),min(hr[[484]]),min(hr[[485]]),min(hr[[486]]),min(hr[[487]]),min(hr[[488]]),min(hr[[489]]),min(hr[[490]]),min(hr[[491]]),min(hr[[492]]),min(hr[[493]]),min(hr[[494]]),min(hr[[495]]),min(hr[[496]]),min(hr[[497]]),min(hr[[498]]),min(hr[[499]]),min(hr[[500]]))
+
+
+year_600=c(year_500,min(hr[[501]]),min(hr[[502]]),min(hr[[503]]),min(hr[[504]]),min(hr[[505]]),min(hr[[506]]),min(hr[[507]]),min(hr[[508]]),min(hr[[509]]),min(hr[[510]]),min(hr[[511]]),min(hr[[512]]),min(hr[[513]]),min(hr[[514]]),min(hr[[515]]),min(hr[[516]]),min(hr[[517]]),min(hr[[518]]),min(hr[[519]]),min(hr[[520]]),min(hr[[521]]),min(hr[[522]]),min(hr[[523]]),min(hr[[524]]),min(hr[[525]]),min(hr[[526]]),min(hr[[527]]),min(hr[[528]]),min(hr[[529]]),min(hr[[530]]),min(hr[[531]]),min(hr[[532]]),min(hr[[533]]),min(hr[[534]]),min(hr[[535]]),min(hr[[536]]),min(hr[[537]]),min(hr[[538]]),min(hr[[539]]),min(hr[[540]]),min(hr[[541]]),min(hr[[542]]),min(hr[[543]]),min(hr[[544]]),min(hr[[545]]),min(hr[[546]]),min(hr[[547]]),min(hr[[548]]),min(hr[[549]]),min(hr[[550]]),min(hr[[551]]),min(hr[[552]]),min(hr[[553]]),min(hr[[554]]),min(hr[[555]]),min(hr[[556]]),min(hr[[557]]),min(hr[[558]]),min(hr[[559]]),min(hr[[560]]),min(hr[[561]]),min(hr[[562]]),min(hr[[563]]),min(hr[[564]]),min(hr[[565]]),min(hr[[566]]),min(hr[[567]]),min(hr[[568]]),min(hr[[569]]),min(hr[[570]]),min(hr[[571]]),min(hr[[572]]),min(hr[[573]]),min(hr[[574]]),min(hr[[575]]),min(hr[[576]]),min(hr[[577]]),min(hr[[578]]),min(hr[[579]]),min(hr[[580]]),min(hr[[581]]),min(hr[[582]]),min(hr[[583]]),min(hr[[584]]),min(hr[[585]]),min(hr[[586]]),min(hr[[587]]),min(hr[[588]]),min(hr[[589]]),min(hr[[590]]),min(hr[[591]]),min(hr[[592]]),min(hr[[593]]),min(hr[[594]]),min(hr[[595]]),min(hr[[596]]),min(hr[[597]]),min(hr[[598]]),min(hr[[599]]),min(hr[[600]]))
+
+year_700=c(year_600,min(hr[[601]]),min(hr[[602]]),min(hr[[603]]),min(hr[[604]]),min(hr[[605]]),min(hr[[606]]),min(hr[[607]]),min(hr[[608]]),min(hr[[609]]),min(hr[[610]]),min(hr[[611]]),min(hr[[612]]),min(hr[[613]]),min(hr[[614]]),min(hr[[615]]),min(hr[[616]]),min(hr[[617]]),min(hr[[618]]),min(hr[[619]]),min(hr[[620]]),min(hr[[621]]),min(hr[[622]]),min(hr[[623]]),min(hr[[624]]),min(hr[[625]]),min(hr[[626]]),min(hr[[627]]),min(hr[[628]]),min(hr[[629]]),min(hr[[630]]),min(hr[[631]]),min(hr[[632]]),min(hr[[633]]),min(hr[[634]]),min(hr[[635]]),min(hr[[636]]),min(hr[[637]]),min(hr[[638]]),min(hr[[639]]),min(hr[[640]]),min(hr[[641]]),min(hr[[642]]),min(hr[[643]]),min(hr[[644]]),min(hr[[645]]),min(hr[[646]]),min(hr[[647]]),min(hr[[648]]),min(hr[[649]]),min(hr[[650]]),min(hr[[651]]),min(hr[[652]]),min(hr[[653]]),min(hr[[654]]),min(hr[[655]]),min(hr[[656]]),min(hr[[657]]),min(hr[[658]]),min(hr[[659]]),min(hr[[660]]),min(hr[[661]]),min(hr[[662]]),min(hr[[663]]),min(hr[[664]]),min(hr[[665]]),min(hr[[666]]),min(hr[[667]]),min(hr[[668]]),min(hr[[669]]),min(hr[[670]]),min(hr[[671]]),min(hr[[672]]),min(hr[[673]]),min(hr[[674]]),min(hr[[675]]),min(hr[[676]]),min(hr[[677]]),min(hr[[678]]),min(hr[[679]]),min(hr[[680]]),min(hr[[681]]),min(hr[[682]]),min(hr[[683]]),min(hr[[684]]),min(hr[[685]]),min(hr[[686]]),min(hr[[687]]),min(hr[[688]]),min(hr[[689]]),min(hr[[690]]),min(hr[[691]]),min(hr[[692]]),min(hr[[693]]),min(hr[[694]]),min(hr[[695]]),min(hr[[696]]),min(hr[[697]]),min(hr[[698]]),min(hr[[699]]),min(hr[[700]]))
+
+
+year_800=c(year_700,min(hr[[701]]),min(hr[[702]]),min(hr[[703]]),min(hr[[704]]),min(hr[[705]]),min(hr[[706]]),min(hr[[707]]),min(hr[[708]]),min(hr[[709]]),min(hr[[710]]),min(hr[[711]]),min(hr[[712]]),min(hr[[713]]),min(hr[[714]]),min(hr[[715]]),min(hr[[716]]),min(hr[[717]]),min(hr[[718]]),min(hr[[719]]),min(hr[[720]]),min(hr[[721]]),min(hr[[722]]),min(hr[[723]]),min(hr[[724]]),min(hr[[725]]),min(hr[[726]]),min(hr[[727]]),min(hr[[728]]),min(hr[[729]]),min(hr[[730]]),min(hr[[731]]),min(hr[[732]]),min(hr[[733]]),min(hr[[734]]),min(hr[[735]]),min(hr[[736]]),min(hr[[737]]),min(hr[[738]]),min(hr[[739]]),min(hr[[740]]),min(hr[[741]]),min(hr[[742]]),min(hr[[743]]),min(hr[[744]]),min(hr[[745]]),min(hr[[746]]),min(hr[[747]]),min(hr[[748]]),min(hr[[749]]),min(hr[[750]]),min(hr[[751]]),min(hr[[752]]),min(hr[[753]]),min(hr[[754]]),min(hr[[755]]),min(hr[[756]]),min(hr[[757]]),min(hr[[758]]),min(hr[[759]]),min(hr[[760]]),min(hr[[761]]),min(hr[[762]]),min(hr[[763]]),min(hr[[764]]),min(hr[[765]]),min(hr[[766]]),min(hr[[767]]),min(hr[[768]]),min(hr[[769]]),min(hr[[770]]),min(hr[[771]]),min(hr[[772]]),min(hr[[773]]),min(hr[[774]]),min(hr[[775]]),min(hr[[776]]),min(hr[[777]]),min(hr[[778]]),min(hr[[779]]),min(hr[[780]]),min(hr[[781]]),min(hr[[782]]),min(hr[[783]]),min(hr[[784]]),min(hr[[785]]),min(hr[[786]]),min(hr[[787]]),min(hr[[788]]),min(hr[[789]]),min(hr[[790]]),min(hr[[791]]),min(hr[[792]]),min(hr[[793]]),min(hr[[794]]),min(hr[[795]]),min(hr[[796]]),min(hr[[797]]),min(hr[[798]]),min(hr[[799]]),min(hr[[800]]))
+
+
+year_900=c(year_800,min(hr[[801]]),min(hr[[802]]),min(hr[[803]]),min(hr[[804]]),min(hr[[805]]),min(hr[[806]]),min(hr[[807]]),min(hr[[808]]),min(hr[[809]]),min(hr[[810]]),min(hr[[811]]),min(hr[[812]]),min(hr[[813]]),min(hr[[814]]),min(hr[[815]]),min(hr[[816]]),min(hr[[817]]),min(hr[[818]]),min(hr[[819]]),min(hr[[820]]),min(hr[[821]]),min(hr[[822]]),min(hr[[823]]),min(hr[[824]]),min(hr[[825]]),min(hr[[826]]),min(hr[[827]]),min(hr[[828]]),min(hr[[829]]),min(hr[[830]]),min(hr[[831]]),min(hr[[832]]),min(hr[[833]]),min(hr[[834]]),min(hr[[835]]),min(hr[[836]]),min(hr[[837]]),min(hr[[838]]),min(hr[[839]]),min(hr[[840]]),min(hr[[841]]),min(hr[[842]]),min(hr[[843]]),min(hr[[844]]),min(hr[[845]]),min(hr[[846]]),min(hr[[847]]),min(hr[[848]]),min(hr[[849]]),min(hr[[850]]),min(hr[[851]]),min(hr[[852]]),min(hr[[853]]),min(hr[[854]]),min(hr[[855]]),min(hr[[856]]),min(hr[[857]]),min(hr[[858]]),min(hr[[859]]),min(hr[[860]]),min(hr[[861]]),min(hr[[862]]),min(hr[[863]]),min(hr[[864]]),min(hr[[865]]),min(hr[[866]]),min(hr[[867]]),min(hr[[868]]),min(hr[[869]]),min(hr[[870]]),min(hr[[871]]),min(hr[[872]]),min(hr[[873]]),min(hr[[874]]),min(hr[[875]]),min(hr[[876]]),min(hr[[877]]),min(hr[[878]]),min(hr[[879]]),min(hr[[880]]),min(hr[[881]]),min(hr[[882]]),min(hr[[883]]),min(hr[[884]]),min(hr[[885]]),min(hr[[886]]),min(hr[[887]]),min(hr[[888]]),min(hr[[889]]),min(hr[[890]]),min(hr[[891]]),min(hr[[892]]),min(hr[[893]]),min(hr[[894]]),min(hr[[895]]),min(hr[[896]]),min(hr[[897]]),min(hr[[898]]),min(hr[[899]]),min(hr[[900]]))
+
+
+
+year_982=c(year_900,min(hr[[901]]),min(hr[[902]]),min(hr[[903]]),min(hr[[904]]),min(hr[[905]]),min(hr[[906]]),min(hr[[907]]),min(hr[[908]]),min(hr[[909]]),min(hr[[910]]),min(hr[[911]]),min(hr[[912]]),min(hr[[913]]),min(hr[[914]]),min(hr[[915]]),min(hr[[916]]),min(hr[[917]]),min(hr[[918]]),min(hr[[919]]),min(hr[[920]]),min(hr[[921]]),min(hr[[922]]),min(hr[[923]]),min(hr[[924]]),min(hr[[925]]),min(hr[[926]]),min(hr[[927]]),min(hr[[928]]),min(hr[[929]]),min(hr[[930]]),min(hr[[931]]),min(hr[[932]]),min(hr[[933]]),min(hr[[934]]),min(hr[[935]]),min(hr[[936]]),min(hr[[937]]),min(hr[[938]]),min(hr[[939]]),min(hr[[940]]),min(hr[[941]]),min(hr[[942]]),min(hr[[943]]),min(hr[[944]]),min(hr[[945]]),min(hr[[946]]),min(hr[[947]]),min(hr[[948]]),min(hr[[949]]),min(hr[[950]]),min(hr[[951]]),min(hr[[952]]),min(hr[[953]]),min(hr[[954]]),min(hr[[955]]),min(hr[[956]]),min(hr[[957]]),min(hr[[958]]),min(hr[[959]]),min(hr[[960]]),min(hr[[961]]),min(hr[[962]]),min(hr[[963]]),min(hr[[964]]),min(hr[[965]]),min(hr[[966]]),min(hr[[967]]),min(hr[[968]]),min(hr[[969]]),min(hr[[970]]),min(hr[[971]]),min(hr[[972]]),min(hr[[973]]),min(hr[[974]]),min(hr[[975]]),min(hr[[976]]),min(hr[[977]]),min(hr[[978]]),min(hr[[979]]),min(hr[[980]]),min(hr[[981]]),min(hr[[982]]))
+
+
+
+
+min_year=cbind.data.frame(year=as.integer(year_982))
+
+
+View(min_year)
+
+```
+```{r}
+
+
+typeof(min_year[1,])
+
+
+
+```
+
+
+
+
+
+```{r}
+
+#  Error
+
+
+hr=heritage_all
+
+min_year=cbind.data.frame(year=list(min(hr[[c(1:982)]])))
+
+
+View(min_year)
+
+```
+
+
+
+
