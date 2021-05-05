@@ -1,0 +1,25 @@
+---
+title: "sort_chineseNumbers"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#' Sorting chinese numbers
+#'
+#' @param origin A character vector of Chinese numbers
+#' @param descreasing A logical (default=F). TRUE means the return result should order numbers from the largest to the smallest
+#'
+#' @return A sorted vector of origin input
+#' @export
+#'
+#' @examples None.
+sort_chineseNumbers <- function(origin, descreasing=F){
+
+  return(sorted_origin)
+}
+```
+
