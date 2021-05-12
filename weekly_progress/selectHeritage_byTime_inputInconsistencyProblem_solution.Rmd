@@ -56,9 +56,9 @@ tenth <- {
   stringr::str_extract(non_arabics,
                        "[一二三四五六七八九壹貳參肆伍陸柒捌玖](?=[十拾]|０$)") -> 
     tenth
-  whichIs30 <- stringr::str_which(non_arabics,"卅")
+  #whichIs30 <- stringr::str_which(non_arabics,"卅")
   convert_chn2arabics(tenth) -> tenth
-  tenth[whichIs30] <- "3"
+  #tenth[whichIs30] <- "3"
 
 }
 
@@ -76,10 +76,20 @@ westernYear <- 1911 + arabics
 
 year_table <- data.frame(
   origin=origin,
-  revised=arabics,
+  revised=revised,
+  arabics=arabics,
   westernYear=westernYear
 )
 
+# data.frame(
+#   non_arabics=non_arabics,
+#   firstDigit=firstDigit,
+#   tenth=tenth
+# )
+```
+
+```{r}
+chinese$convert_minguo2western(origin)
 ```
 
 ### 中文西元年份
@@ -103,6 +113,9 @@ convert_chn2arabics(.temp) -> .temp
 as.integer(.temp) -> finalised
 ```
 
+```{r}
+chinese$convert_chnWesternYears(westernYears)
+```
 
 ### 日治時代
 

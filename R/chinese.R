@@ -1,12 +1,15 @@
-convert_minguo2western <- function(minguo_string){
+chinese <- list()
+
+chinese$convert_minguo2western <- convert_minguo2western <- function(minguo_string){
   
   # return(westernYearIntegers)
 }
 
-convert_chnWesternYears <- function(chnWestYears){
+chinese$convert_chnWesternYears <- convert_chnWesternYears <- function(chnWestYears){
   
   # return(westernYearInteger) 
 }
+
 
 # helpers
 
