@@ -1,0 +1,459 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+---
+title: "時光縮影: part 2"
+output: html_document
+---
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+```
+
+## 處理非正規書寫西元年份
+
+### 民國
+
+```{r}
+purrr::map(
+  list_heritageYears,
+  ~{
+    stringr::str_subset(.x, "民國")
+  }
+) -> list_minguo
+
+table(unlist(list_minguo))
+
+
+```
+
+### 中文西元年份
+
+```{r}
+pattern <- "一[O一二三四五六七八九十]{3}"
+purrr::map(
+  list_heritageYears,
+  ~{
+    stringr::str_subset(.x, pattern)
+  }
+) -> list_westernYearsInChineseWriting
+table(unlist(list_westernYearsInChineseWriting))
+```
+
+### 日治時代
+
+  * 替換成"1895-1945"
+
+```{r}
+library(stringr)
+
+table_data <- table(unlist(list_westernYearsInChineseWriting))
+
+
+pattern <- "一[O0○０一二三四五六七八九十]{3}"
+
+
+
+
+
+```
+
+
+```{r}
+
+# 中文西元年份
+
+num_year <- c(0,0,0,0,1,2,3,4,5,6,7,8,9," ")
+
+names(num_year) <- c("O","0","○","０","一","二","三","四","五","六","七","八","九","年")
+
+
+num_year
+```
+
+```{r}
+# 中文西元年份變換
+
+library(stringr)
+
+for (i in 1:length(list_heritageYears)){
+  
+  if (length(list_heritageYears[[i]]>0)){
+    
+    target <- str_subset(list_heritageYears[[i]],pattern=pattern)
+    
+    list_heritageYears[[i]][str_detect(list_heritageYears[[i]],pattern=pattern)] <-
+      
+        str_replace_all(target,pattern=num_year)
+    
+    
+    
+  }
+  
+  
+  
+  
+}
+
+
+
+
+
+
+```
+
+
+
+```{r}
+ROC_year=c(19,2,3,4,5,6,7,8,9,0,1," ")
+
+names(ROC_year) <- c("民國","1","2","3","4","5","6","7","8","9","0","年")
+
+ROC_year
+
+
+```
+
+```{r}
+# Error  (全部皆變成1111 ?)
+
+library(stringr)
+
+for (i in 1:length(list_heritageYears)){
+  
+  if (length(list_heritageYears[[i]]>0)){
+    
+    target_2 <- str_subset(list_heritageYears[[i]],pattern=ROC_pattern)
+    
+    list_heritageYears[[i]][str_detect(list_heritageYears[[i]],pattern=ROC_pattern)] <- 
+      
+        str_replace_all(target_2,pattern=ROC_year)
+    
+    
+    
+  }
+  
+  
+  
+}
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+# 更換民國 [中文數字]  年   eg: 民國 七十四 年  --> 民國 74 年
+
+ROC_pattern_chinese <- "民國[一二三四五六七八九十]+年"
+
+minguo_chinese_year <- c(1,2,3,4,5,6,7,8,9,"")
+
+names(minguo_chinese_year) <- c("一","二","三","四","五","六","七","八","九","十")
+
+minguo_chinese_year
+
+
+
+for (i in 1:length(list_heritageYears)){
+  
+  if (length(list_heritageYears)>0){
+    
+minguo_chinese_numbers <- str_subset(list_heritageYears[[i]],pattern=ROC_pattern_chinese)
+
+list_heritageYears[[i]][str_detect(list_heritageYears[[i]],pattern=ROC_pattern_chinese)] <-
+  
+  str_replace_all(minguo_chinese_numbers,pattern=minguo_chinese_year)}
+    
+}
+
+
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+# 把 民國 [數字] 年 --> 西元年份  eg: 民國 65 年  --> 西元 1976 年
+
+for (i in 1:length(list_heritageYears)){  
+  
+  if (length(list_heritageYears[[i]])>0){
+    
+     minguo <- str_subset(list_heritageYears[[i]],pattern=ROC_pattern)
+     
+     minguo_numbers <- str_extract_all(minguo,pattern="[0-9]+")
+     
+     unlist_minguo_numbers <- unlist(minguo_numbers)
+     
+     list_heritageYears[[i]][str_detect(list_heritageYears[[i]],pattern=ROC_pattern)] <-
+       
+       as.character(as.numeric(unlist_minguo_numbers)+1911)
+
+    
+  } 
+  
+  
+  }
+
+
+
+```
+
+
+
+```{r}
+# 日治時代  --> 1895-1945
+
+japan_era="日[治據]時[期代]"
+
+
+for (i in 1:length(list_heritageYears)){
+  
+  if (length(list_heritageYears)>0){       
+    
+    select_japanTime <- str_subset(list_heritageYears[[i]],pattern=japan_era)
+    
+    list_heritageYears[[i]][str_detect(list_heritageYears[[i]],pattern=japan_era)] <-
+      
+      as.character(paste0(1895,"-",1945))
+    
+    
+    
+    
+    
+    }
+  
+  
+  
+  
+  
+  
+}
+
+
+
+
+
+```
+
+
+```{r}
+
+# 剩餘條件外年份 --> 手動更改
+
+# 1.民國五０年
+
+list_heritageYears[[33]][2] <- as.character(1961)
+
+# 2.民國卅七年
+
+list_heritageYears[[60]][1] <- as.character(1948)
+
+# 3.民國元年
+
+list_heritageYears[[186]][2] <- as.character(1911)
+                          
+# 4.民國前11年
+
+list_heritageYears[[208]][1] <- as.character(1900)
+
+
+# 5.一歷經百年
+
+list_heritageYears[[237]][-9]
+
+
+# 6.一百九十年
+
+list_heritageYears[[254]][-2]
+
+# 7.一百八十年
+
+list_heritageYears[[363]][-5]
+
+# 8.一、「萬年
+
+list_heritageYears[[437]][-11]
+
+# 9. 民國約64年
+
+list_heritageYears[[467]][c(1,9)] <- as.character(1975)
+
+# 10. 民國初年
+
+list_heritageYears[[399]][7] <- as.character(1911)
+list_heritageYears[[872]][2] <- as.character(1911)
+
+# 11.民國前44年
+
+list_heritageYears[[681]][5] <- as.character(1867)
+
+# 12. 民國元年
+
+list_heritageYears[[706]][5] <- as.character(1911)
+list_heritageYears[[756]][9] <- as.character(1911)
+
+# 13. 一百五十年
+
+list_heritageYears[[673]][-2]
+
+# 14. 民國年
+
+list_heritageYears[[742]][-5]
+list_heritageYears[[841]][-1]
+
+# 15.民國一○一年
+
+list_heritageYears[[738]][c(15,16)] <- as.character(2012)
+list_heritageYears[[808]][10] <- as.character(2012)
+list_heritageYears[[714]][4] <- as.character(2011)
+
+# 16. 一至十五年
+
+list_heritageYears[[764]][-2]
+
+# 17. 一日.享年
+list_heritageYears[[798]][-8]
+
+# 18. 民國前7年
+
+list_heritageYears[[913]][2] <- as.character(1904)
+
+# 19. 民國20 多年
+
+list_heritageYears[[808]][1] <- as.character("1931-1941")
+
+# 20. 40 多年
+
+list_heritageYears[[837]][6] <-as.character("1951-1961")
+
+# 21. 50 多年
+
+list_heritageYears[[787]][16] <- as.character("1961-1971")
+list_heritageYears[[835]][8] <- as.character("1961-1971")
+
+#22. 60 多年
+
+list_heritageYears[[788]][6] <- as.character("1971-1981")
+list_heritageYears[[833]][5] <- as.character("1971-1981")
+list_heritageYears[[835]][1] <- as.character("1971-1981")
+list_heritageYears[[835]][10] <- as.character("1971-1981")
+list_heritageYears[[872]][6] <- as.character("1971-1981")
+
+# 23. 70 多年
+list_heritageYears[[836]][1] <- as.character("1981-1991")
+list_heritageYears[[837]][3] <- as.character("1981-1991")
+list_heritageYears[[836]][10] <- as.character("1981-1991")
+list_heritageYears[[872]][7] <- as.character("1981-1991")
+
+# 24. 80多年
+list_heritageYears[[788]][7] <- as.character("1991-2001")
+list_heritageYears[[841]][19] <- as.character("1991-2001")
+
+# 25. 100 102 年
+
+list_heritageYears[[776]][10] <- as.character(2011)
+list_heritageYears[[836]][2]  <- as.character(2013)
+
+# 26. 民國十多年
+
+list_heritageYears[[836]][3] <- as.character("1921-1931")
+
+
+
+
+
+
+
+```
+
+
+```{r}
+
+# 檢查剩餘未修正年份
+
+
+for (i in 1:length(list_heritageYears)){
+  
+  if (length(list_heritageYears[[i]])>6){
+    
+
+    
+  print(paste0(i," --> ",list_heritageYears[[i]]))  
+    
+    
+    
+  }
+  
+  
+  
+  
+}
+
+
+
+
+
+```
+
+
+
+
+
+```{r}
+
+View(list_heritageYears)
+
+
+```
