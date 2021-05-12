@@ -1,0 +1,91 @@
+---
+title: "sort_chineseNumbers"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹", "陸拾", "參拾")
+
+oldLevels_rev <- {
+  stringr::str_replace(oldLevels, "[十拾]$","拾零")
+}
+
+oldLevels_inArabicNumber <- { # Your algorithm
+  mapChinese2 <- mapChinese1 <- as.character(0:10)
+  names(mapChinese1) <- chineseNumber1_char
+  names(mapChinese2) <- chineseNumber2_char
+  
+  stringr::str_replace_all(
+    oldLevels_rev, mapChinese1
+  ) -> oldLevelsReplacement1
+  stringr::str_replace_all(
+    oldLevelsReplacement1, mapChinese2
+  ) -> oldLevels_translated
+}
+
+newLevels <- {
+  order_index <- order(as.numeric(oldLevels_inArabicNumber))
+  oldLevels[order_index]
+}
+
+```
+
+
+```{r}
+#' Sorting chinese numbers
+#'
+#' @param origin A character vector of Chinese numbers
+#' @param descreasing A logical (default=F). TRUE means the return result should order numbers from the largest to the smallest
+#'
+#' @return A sorted vector of origin input
+#' @export
+#'
+#' @examples 
+#' oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹", "陸拾", "參拾")
+#' sort_chineseNumbers(oldLevels)
+sort_chineseNumbers <- function(origin, descreasing=F){
+  chineseNumber1 <- "零一二三四五六七八九十"
+  chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+  chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+  chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+
+  oldLevels_rev <- {
+    stringr::str_replace(origin, "[十拾]$","拾零")
+  }
+  
+  oldLevels_inArabicNumber <- { # Your algorithm
+    mapChinese2 <- mapChinese1 <- as.character(0:10)
+    names(mapChinese1) <- chineseNumber1_char
+    names(mapChinese2) <- chineseNumber2_char
+    
+    stringr::str_replace_all(
+      oldLevels_rev, mapChinese1
+    ) -> oldLevelsReplacement1
+    stringr::str_replace_all(
+      oldLevelsReplacement1, mapChinese2
+    ) -> oldLevels_translated
+  }
+  
+  sorted_origin <- {
+    order_index <- order(as.numeric(oldLevels_inArabicNumber))
+    oldLevels[order_index]
+  }
+
+  return(sorted_origin)
+}
+```
+
+
+```{r}
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹", "陸拾", "參拾")
+sort_chineseNumbers(oldLevels)
+```
+
