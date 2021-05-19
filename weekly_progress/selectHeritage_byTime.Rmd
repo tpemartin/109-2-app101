@@ -38,3 +38,14 @@ filter_heritage <- function(list_heritageYears_converted, start, end=NA){
 }
 ```
 
+```{r}
+exist_since <- function(list_heritageYears_converted, since){
+  
+  return(index_fits)
+}
+exist_before <- function(list_heritageYears_converted, before){
+  
+  return(index_fits)
+}
+```
+
