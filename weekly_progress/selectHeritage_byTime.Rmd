@@ -39,10 +39,28 @@ filter_heritage <- function(list_heritageYears_converted, start, end=NA){
 ```
 
 ```{r}
+#' 列出自何時以後存在的古蹟index
+#'
+#' @param list_heritageYears_converted 
+#' @param since an integer of year
+#'
+#' @return
+#' @export
+#'
+#' @examples
 exist_since <- function(list_heritageYears_converted, since){
   
   return(index_fits)
 }
+#' 列出在何時之前就存在的古蹟index
+#'
+#' @param list_heritageYears_converted 
+#' @param before an integer of year
+#'
+#' @return
+#' @export
+#'
+#' @examples
 exist_before <- function(list_heritageYears_converted, before){
   
   return(index_fits)
