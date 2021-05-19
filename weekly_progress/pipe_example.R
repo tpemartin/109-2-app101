@@ -7,6 +7,7 @@ minguo_number <- convert_chnten(minguo_number,"\\b[十]\\b","10")
 
 # %>% pipe
 library(dplyr)
+library(magrittr)
 
 unlist(stringr::str_extract_all(minguo,pattern2)) %>%
   convert_chn2arabics() %>%
