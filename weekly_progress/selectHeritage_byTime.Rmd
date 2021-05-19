@@ -1,0 +1,40 @@
+---
+title: "時光縮影: part 3"
+output: html_document
+---
+
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+```
+
+## 引入chinese模組
+
+```{r}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(
+  file.path(.root(),"R/chinese_martin.R")
+)
+```
+
+
+## 目標
+
+```{r}
+#' 找出時間點或時間區間有交集的古蹟
+#'
+#' @param list_heritageYears_converted a list of strings.
+#' @param start a character of starting year
+#' @param end a character of ending year. if NA, means until now
+#'
+#' @return integers showing the indices of heritage that fit the criterion
+#' @export
+#'
+#' @examples
+filter_heritage <- function(list_heritageYears_converted, start, end=NA){
+  
+  return(index_fits)
+}
+```
+
