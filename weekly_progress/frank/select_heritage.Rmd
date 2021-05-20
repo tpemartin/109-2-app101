@@ -1,0 +1,132 @@
+---
+title: "select_heritage"
+author: "frank"
+date: "2021年5月19日"
+output: html_document
+---
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+```
+
+## 引入chinese模組
+
+```{r}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(
+  file.path(.root(),"R/chinese_martin.R")
+)
+```
+
+## 轉換data
+
+```{r}
+purrr::map(
+  list_heritageYears,
+  ~{
+    chinese$convert2westernYears(.x)
+  }
+) -> list_heritageYears_converted
+```
+
+
+## 目標
+
+```{r}
+#' 找出時間點或時間區間有交集的古蹟
+#'
+#' @param list_heritageYears_converted a list of strings.
+#' @param start a character of starting year
+#' @param end a character of ending year. if NA, means until now
+#'
+#' @return integers showing the indices of heritage that fit the criterion
+#' @export
+#'
+#' @examples
+source("/Users/frankchao/Desktop/109-2-app101/weekly_progress/frank/time_interval.R")
+library(lubridate)
+library(dplyr)
+filter_heritage <- function(list_heritageYears_converted, start, end=NA){
+      create_interval(start,end) -> .interval
+      find_ListObject_within_interval(list_heritageYears_converted,.interval) -> index_fits
+      return(index_fits)
+}
+filter_heritage(list_heritageYears_converted, 1938, NA) -> from_1938_to_now
+filter_heritage(list_heritageYears_converted, 1638, 1837 ) -> from_1638_to_1837
+```
+
+
+```{r}
+#' 列出自何時以後存在的古蹟index
+#'
+#' @param list_heritageYears_converted 
+#' @param since an integer of year
+#'
+#' @return
+#' @export
+#'
+#' @examples
+exist_since <- function(list_heritageYears_converted, since){
+      create_interval(since,"2021") -> .interval
+      find_ListObject_within_interval(list_heritageYears_converted,.interval) -> index_fits
+      return(index_fits)
+}
+exist_since(list_heritageYears_converted,1980) -> since_1980
+#' 列出在何時之前就存在的古蹟index
+#'
+#' @param list_heritageYears_converted 
+#' @param before an integer of year
+#'
+#' @return
+#' @export
+#'
+#' @examples
+exist_before <- function(list_heritageYears_converted, before){
+      create_interval("0001",before) -> .interval
+      find_ListObject_within_interval(list_heritageYears_converted,.interval) -> index_fits
+      return(index_fits)
+}
+exist_before(list_heritageYears_converted,1555) -> before_1555
+```
+
+# example
+
+```{r}
+c("1980","2000","1792","1683") -> year_test1
+create_interval(year_test1,year_test1) -> interv1 
+int_overlaps(interv1,interval(ymd("1970:01:01"),ymd("2001:01:01")))
+c("1980") -> year_test2
+create_interval(year_test2,year_test2)
+create_interval("1980",NA)
+create_interval("1895-1945","1895-1945")
+create_interval(c("1895-1945","1872","1785"),c("1895-1945","1872","1785"))
+create_interval(c("1895-1945","1872","一百一十"),c("1895-1945","1872","一百一十")) -> interv2
+int_overlaps(interv2,interval(ymd("1930:01:01"),ymd("1941:01:01")))
+```
+
+# check
+```{r}
+# check filter_heritage
+sample(which(from_1938_to_now),5) -> test1
+list_heritageYears_converted[test1]
+sample(which(from_1638_to_1837),5) -> test2
+list_heritageYears_converted[test2]
+# check exist_since
+sample(which(since_1980),5) -> test
+list_heritageYears_converted[test]
+# check exist_before
+sample(which(before_1555),5) -> test
+list_heritageYears_converted[test]
+```
+
+
+
+
+
+
+
+
+
+
+
