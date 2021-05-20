@@ -1,0 +1,91 @@
+---
+title: "時光縮影: part 2"
+output: html_document
+---
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+```
+
+## 引入chinese模組
+
+```{r}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(
+  file.path(.root(),"R/chinese_martin.R")
+)
+```
+
+
+## 處理1
+
+
+```{r}
+.x =1
+
+list_heritageYearsX <- list_heritageYears[[.x]]
+pattern_mingou <- "民國"
+pattern_chnWestern <- "一[O０一二三四五六七八九十]{3}"
+pattern_jpn <- "日[治據]時[期代]"
+
+whichAreMingou <- stringr::str_which(list_heritageYearsX, pattern_mingou)
+whichAreChnWestern <- stringr::str_which(list_heritageYearsX, pattern_chnWestern)
+whichAreJpn <- stringr::str_which(list_heritageYearsX, pattern_jpn)
+
+list_heritageYearsX_result <- list_heritageYearsX
+if(length(whichAreMingou) !=0){
+  chinese$convert_minguo2western(list_heritageYearsX[whichAreMingou]) -> .x
+  list_heritageYearsX_result[whichAreMingou] <- as.character(.x)
+}
+if(length(whichAreChnWestern) !=0){
+  chinese$convert_chnWesternYears(list_heritageYearsX[whichAreChnWestern]) -> .x
+  list_heritageYearsX_result[whichAreChnWestern] <- as.character(.x)
+}
+if(length(whichAreJpn) !=0){
+  list_heritageYearsX_result[whichAreJpn] <- "1895-1945"
+}
+unique(list_heritageYearsX_result)
+```
+
+```{r}
+purrr::map(
+  seq_along(list_heritageYears),
+  ~{
+    list_heritageYearsX <- list_heritageYears[[.x]]
+    pattern_mingou <- "民國"
+    pattern_chnWestern <- "一[０O一二三四五六七八九十]{3}"
+    pattern_jpn <- "日[治據]時[期代]"
+    
+    whichAreMingou <- stringr::str_which(list_heritageYearsX, pattern_mingou)
+    whichAreChnWestern <- stringr::str_which(list_heritageYearsX, pattern_chnWestern)
+    whichAreJpn <- stringr::str_which(list_heritageYearsX, pattern_jpn)
+    
+    list_heritageYearsX_result <- list_heritageYearsX
+    if(length(whichAreMingou) !=0){
+      chinese$convert_minguo2western(list_heritageYearsX[whichAreMingou]) -> .x
+      list_heritageYearsX_result[whichAreMingou] <- as.character(.x)
+    }
+    if(length(whichAreChnWestern) !=0){
+      chinese$convert_chnWesternYears(list_heritageYearsX[whichAreChnWestern]) -> .x
+      list_heritageYearsX_result[whichAreChnWestern] <- as.character(.x)
+    }
+    if(length(whichAreJpn) !=0){
+      list_heritageYearsX_result[whichAreJpn] <- "1895-1945"
+    }
+    unique(list_heritageYearsX_result)
+  }
+) -> list_heritageYears_converted
+```
+
+## 處理2
+
+```{r}
+purrr::map(
+  list_heritageYears,
+  ~{
+    chinese$convert2westernYears(.x)
+  }
+) -> list_heritageYears_converted
+```
+
