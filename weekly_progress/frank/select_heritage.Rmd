@@ -120,9 +120,25 @@ sample(which(before_1555),5) -> test
 list_heritageYears_converted[test]
 ```
 
+# psuedo code
 
-
-
+filter_heritage(data:list,start_year:charater,end_year:character)
+1      time_interval1 = create_time_interval(start_year,end_year)
+2      index_list = []
+3      for atomic vector in data : 
+4          interval_list = []
+5          for all years in atomic vector:
+6              if year == "1895-1945":
+7                   convert it to time_interval(1895-01-01,1945-01-01) and store to 
+8                   interval_list
+9              elseif year is character(number) :
+10                  convert it to time_interval(year-01-01,year-01-01) and store to 
+11                  interval_list
+12             else:
+13                  jump
+14         if there's any time overlap between elements of interval_list and time_interval1:
+15             store index(atomic vector) to index_list
+16      return index_list       
 
 
 
