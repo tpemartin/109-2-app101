@@ -1,4 +1,14 @@
-chinese <- list()
+---
+title: "Untitled"
+output: html_document
+---
+
+
+
+
+
+
+  chinese <- list()
 
 chinese$convert_minguo2western <- convert_minguo2western <- function(minguo_string){
   origin <- minguo_string
@@ -105,3 +115,5 @@ na_is_0 <- function(origin){
   origin[whichIsNA] = "0"
   return(origin)
 }
+
+
