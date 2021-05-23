@@ -25,6 +25,9 @@ names(num_year) <- c("O","0","○","０","一","二","三","四","五","六","�
 }
 
 
+chinese_to_ad("一八九五")
+
+
 ```
 
 
@@ -67,6 +70,9 @@ return(ad_num_year)
 }
 
 
+minguo_chinese_function("民國十六年")
+
+
 ```
 
 
@@ -89,6 +95,8 @@ japan_year <- function(japans_colony) {
   
 }
 
+
+japan_year("日據時代")
 
 
 
