@@ -1,0 +1,28 @@
+---
+title: "GPS recorder"
+output: html_document
+---
+
+<button id="checkInBtn" type="button" class="btn btn-primary" onclick="getLocation()">打卡</button>
+
+<div id="demo"></div>
+
+```{r, echo=F}
+htmltools::HTML('<script>
+var x = document.getElementById("demo");
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude +
+  "<br>Longitude: " + position.coords.longitude;
+}
+</script>')
+
+```
+
