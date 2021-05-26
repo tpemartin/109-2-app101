@@ -62,7 +62,7 @@ purrr::map(
   list_heritageYears,
   ~{
     chinese$convert2westernYears(.x)
-    browser()
+ 
 
     
   }
