@@ -55,6 +55,7 @@ chinese$convert_minguo2western <- convert_minguo2western <- function(minguo_stri
 chinese$convert_chnWesternYears <- convert_chnWesternYears <- function(chnWestYears){
   stringr::str_remove(chnWestYears, "年") -> .temp
   convert_chn2arabics(.temp) -> .temp
+  stringr::str_replace_all(.temp,c("０"="0","○"="0","O"="0")) -> .temp
   as.integer(.temp) -> westernYearInteger
   return(westernYearInteger)
 }

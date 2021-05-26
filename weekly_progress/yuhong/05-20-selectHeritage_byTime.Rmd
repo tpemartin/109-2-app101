@@ -1,0 +1,177 @@
+---
+title: "時光縮影: part 3"
+output: html_document
+---
+
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+```
+
+## 引入chinese模組失敗，改用錫宇版本，變出阿拉伯數字 list
+
+```{r}
+library(purrr)
+library(lubridate)
+library(stringr)
+library(glue)
+
+input_list <- list_heritageYears
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(file.path(.root(),"weekly_progress/yuhong/transfer_to_num_list.R"),encoding = "UTF-8")
+list_heritageYears <- input_list
+rm(input_list, jp_period, ming, ming_num, ming_pattern, ming_pattern21, ming_pattern22, x, xxxx, xxxx_year, chinese_number_transfer)
+names(list_heritageYears) <- 1:982
+list_heritageYears22 <- list_heritageYears
+```
+
+## 整理資料：日治時期
+
+```{r}
+
+ #1 失敗
+# for (.y in 1:200) { # 200 個是 lv1
+#    if(str_detect(list_heritageYears22[.y], "1895-1945")){ # 找到有日治的 lv1
+#      select_baby <- .y # 存是第幾個 lv1
+#      length_of_lv2 <- length(list_heritageYears22[[.y]]) # 看 lv1 中有多少 lv2
+#      
+#      map(
+#        1:50, # 1896-1945 共 50 年
+#      list_heritageYears22[[select_baby]][[length_of_lv2+.x]] <- as.character(1895+.x) # 在 lv2 最後逐一新增
+#      )
+#    }
+#}
+
+ #2
+for (.y in seq_along(list_heritageYears22)) {
+    if(length(which(str_detect(list_heritageYears22[[.y]], "1895-1945")))>0){
+      length_of_lv2 <- length(list_heritageYears22[[.y]])
+      
+      add_start <- length_of_lv2 +1
+      add_end <- length_of_lv2 +50
+      list_heritageYears22[[.y]][add_start:add_end] <- as.character(1896:1945) # 取代不用 map
+    }
+}
+
+for (.y in seq_along(list_heritageYears22)) {
+    list_heritageYears22[[.y]] <- str_replace(list_heritageYears22[[.y]], pattern = "1895-1945" , replacement = "1895")
+  }
+rm(add_start, add_end, length_of_lv2)
+```
+
+## 目標 1：找出時間點或時間區間有交集的古蹟
+
+```{r}
+# index_fits <- list()
+
+# `start` <- 1855
+# `end` <- 1896
+#
+# for (.y in seq_along(list_heritageYears22)) {
+#  lv1 <- .y 
+#  for (.x in seq_along(list_heritageYears22[[lv1]])) {
+#    
+#    if(!is.na(as.numeric(list_heritageYears22[[lv1]][.x]))){
+#        
+#      if(as.numeric(list_heritageYears22[[lv1]][.x]) >= `start` && as.numeric(list_heritageYears22[[lv1]][.x]) <= `end`){
+#          index_fits[length(index_fits)+1] <- names(list_heritageYears22[lv1])
+#          unique(index_fits) # unique 失敗？
+#      }
+#    }
+#  }
+#}
+# rm(lv1, `start`,`end`)
+# index_fits<- unique(unlist(index_fits))
+
+
+
+filter_heritage <- function(list_heritageYears_converted, start, end=NA){
+  
+  index_fits <- list()
+  
+  for (.y in seq_along(list_heritageYears_converted)) {
+    lv1 <- .y 
+    for (.x in seq_along(list_heritageYears_converted[[lv1]])) {
+      
+      if(!is.na(as.numeric(list_heritageYears_converted[[lv1]][.x]))){
+        
+        if(is.na(end)){
+          
+          if(as.numeric(list_heritageYears_converted[[lv1]][.x]) >= start){
+            index_fits[length(index_fits)+1] <- names(list_heritageYears_converted[lv1])
+            }
+            
+        }else
+        {
+          if(as.numeric(list_heritageYears_converted[[lv1]][.x]) >= start && as.numeric(list_heritageYears_converted[[lv1]][.x]) <= end){
+            index_fits[length(index_fits)+1] <- names(list_heritageYears_converted[lv1])
+          }
+        }
+      }
+    }
+  }
+  index_fits <- unique(unlist(index_fits))
+  return(index_fits)
+}
+
+filter_heritage(list_heritageYears, 1875, )
+```
+
+
+## 目標
+
+```{r}
+#' 找出時間點或時間區間有交集的古蹟
+#'
+#' @param list_heritageYears_converted a list of strings.
+#' @param start a character of starting year
+#' @param end a character of ending year. if NA, means until now
+#'
+#' @return integers showing the indices of heritage that fit the criterion
+#' @export
+#'
+#' @examples
+filter_heritage <- function(list_heritageYears_converted, start, end=NA){
+  
+
+    
+
+
+  return(index_fits)
+}
+
+filter_heritage(list_heritageYears_converted,1930,)
+
+```
+
+```{r}
+#' 列出自何時以後存在的古蹟index
+#'
+#' @param list_heritageYears_converted 
+#' @param since an integer of year
+#'
+#' @return
+#' @export
+#'
+#' @examples
+exist_since <- function(list_heritageYears_converted, since){
+  
+  return(index_fits)
+}
+#' 列出在何時之前就存在的古蹟index
+#'
+#' @param list_heritageYears_converted 
+#' @param before an integer of year
+#'
+#' @return
+#' @export
+#'
+#' @examples
+exist_before <- function(list_heritageYears_converted, before){
+  
+  return(index_fits)
+}
+```
+
+
