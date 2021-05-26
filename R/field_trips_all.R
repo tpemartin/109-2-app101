@@ -1,10 +1,6 @@
 
 ## --------------------------------------------------------------
-library(dplyr)
-library(ggplot2)
-library(plotly)
-library(leaflet)
-.root <- rprojroot::is_rstudio_project$make_fix_file()
+
 destfile = 
   file.path(.root(), "userGPX.zip")
 xfun::download_file(
