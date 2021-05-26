@@ -5,6 +5,11 @@ output: html_document
 
 
 ```{r}
+remotes::install_github("tpemartin/econR", force=T)
+```
+
+
+```{r}
 xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
 list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
 ```
