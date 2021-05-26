@@ -84,16 +84,13 @@ ans
 
 
 
+
+
 ```{r}
+
 pattern_mingou <- "民國"
 pattern_chnWestern <- "一[○Ｏ０O0一二三四五六七八九十]{3}"   #更改這行
 pattern_jpn <- "日[治據]時[期代]"
-
-
-
-```
-
-```{r}
 
 library(stringr)
 
