@@ -6,6 +6,13 @@ output: html_document
 
 ```{r}
 remotes::install_github("tpemartin/econR", force=T)
+
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(file.path(.root(), "R/chinese_martin.R" , encoding = "UTF-8"))
+source('C:/Users/su200/Documents/GitHub/109-2-app101/R/chinese_martin.R')
+chinese$convert_minguo2western("民國3七年")
+chinese$convert_minguo2western("民國卅十七年")
+chinese$convert_minguo2western("民國卅七年")
 ```
 
 
@@ -27,6 +34,7 @@ input_list <- list_heritageYears
 source(file.path(.root(),"weekly_progress/yuhong/transfer_to_num_list.R"),encoding = "UTF-8")
 list_heritageYears <- input_list
 rm(input_list, jp_period, ming, ming_num, ming_pattern, ming_pattern21, ming_pattern22, x, xxxx, xxxx_year, chinese_number_transfer)
+
 names(list_heritageYears) <- 1:982
 list_heritageYears22 <- list_heritageYears
 ```
@@ -51,18 +59,18 @@ list_heritageYears22 <- list_heritageYears
  #2
 for (.y in seq_along(list_heritageYears22)) {
     if(length(which(str_detect(list_heritageYears22[[.y]], "1895-1945")))>0){
-      length_of_lv2 <- length(list_heritageYears22[[.y]])
+      length_of_lv2 <- length(list_heritageYears22[[.y]]) # 該古蹟有多少個年份資料
       
-      add_start <- length_of_lv2 +1
+      add_start <- length_of_lv2 +1 # 往後加的開始與結束，1896-1945 共 50 年
       add_end <- length_of_lv2 +50
-      list_heritageYears22[[.y]][add_start:add_end] <- as.character(1896:1945) # 取代不用 map
+      list_heritageYears22[[.y]][add_start:add_end] <- as.character(1896:1945) # 取代不用 map、同長度
     }
 }
 
 for (.y in seq_along(list_heritageYears22)) {
     list_heritageYears22[[.y]] <- str_replace(list_heritageYears22[[.y]], pattern = "1895-1945" , replacement = "1895")
   }
-rm(add_start, add_end, length_of_lv2)
+rm(add_start, add_end, length_of_lv2) # 清乾淨
 ```
 
 ## 目標 1：找出時間點或時間區間有交集的古蹟
@@ -93,21 +101,23 @@ rm(add_start, add_end, length_of_lv2)
 
 filter_heritage <- function(list_heritageYears_converted, start, end=NA){
   
-  index_fits <- list()
+  index_fits <- list() # 先將欲求結果設為空的 list，等等資料放裡面
   
-  for (.y in seq_along(list_heritageYears_converted)) {
-    lv1 <- .y 
-    for (.x in seq_along(list_heritageYears_converted[[lv1]])) {
+  for (.y in seq_along(list_heritageYears_converted)) { # 迴圈給定資料中每一古蹟
+    lv1 <- .y # 第幾個古蹟
+    for (.x in seq_along(list_heritageYears_converted[[lv1]])) { # 第 lv1 個古蹟中迴圈所有年份
       
-      if(!is.na(as.numeric(list_heritageYears_converted[[lv1]][.x]))){
+      if(!is.na(as.numeric(list_heritageYears_converted[[lv1]][.x]))){ # 拒絕處理無法轉成數字的年份
         
+        # 先處理 end 是 NA
         if(is.na(end)){
           
-          if(as.numeric(list_heritageYears_converted[[lv1]][.x]) >= start){
+          if(as.numeric(list_heritageYears_converted[[lv1]][.x]) >= start){ # 如果取出年分 >= start 此古蹟就符合
             index_fits[length(index_fits)+1] <- names(list_heritageYears_converted[lv1])
             }
             
         }else
+        # 再處理start、end 都給定
         {
           if(as.numeric(list_heritageYears_converted[[lv1]][.x]) >= start && as.numeric(list_heritageYears_converted[[lv1]][.x]) <= end){
             index_fits[length(index_fits)+1] <- names(list_heritageYears_converted[lv1])
@@ -116,11 +126,11 @@ filter_heritage <- function(list_heritageYears_converted, start, end=NA){
       }
     }
   }
-  index_fits <- unique(unlist(index_fits))
+  index_fits <- unique(unlist(index_fits)) # unique 他
   return(index_fits)
 }
 
-filter_heritage(list_heritageYears, 1875, )
+filter_heritage(list_heritageYears, 1875, 1876)
 ```
 
 
