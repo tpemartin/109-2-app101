@@ -1,0 +1,256 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+
+
+
+
+```
+```{r}
+user$sessionData$game$puzzle_guess <- 
+  append(
+    user$session$game$puzzle_guess,
+    list(game_result)
+  )
+
+user <- list( sessionData= list( game= list(puzzle_guess=user$sessionData$game$puzzle_guess,
+                                 
+                                 filtered_data = function(){} ,
+                                  
+                                 county_chosen = save_county_chosen  ),
+              
+                                 
+              session = list( game = list( puzzle_guess = ),
+                            
+                              ),
+             
+              checkINs= append(user$checkIns, list(checkInResult)),
+              
+              visits=append(urser$visits, newTraces)
+              
+          )  )
+
+## define complete structure
+
+
+heritage<-
+  list(
+    data = heritageData,
+    show_county = function(){},
+    filter = list(
+      countyChosen = function(){}
+    ),
+    game = list(
+      puzzle_guess = function(){}
+    ),
+    
+    validate_checkIn(returnedGPS) = checkInResult ,
+    
+    track(list_tracks) = newTraces ,
+    
+  )
+
+##
+
+
+heritage$show_county <- function(){  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+} 
+
+  
+heritage$filter$countyChosen <- 
+
+  
+heritage$game$puzzle_guess <- 
+  
+
+
+```
+
+
+
+
+
+```{r}
+
+# 選擇城市後  -->  輸出選擇城市的古蹟 
+
+library(stringr)
+
+heritage$show_county <- function(chosen_county){ 
+  
+  final_result <- list()
+  
+  for (i in seq_along(heritageData$belongCity)){
+    
+    if (str_detect(heritageData$belongCity[[i]],pattern=chosen_county)){
+    
+        heritageData$caseName[[i]] -> final_result[[i]]
+      
+      
+        final_result <- unlist(final_result)
+        
+        final_result <- final_result[!is.na(final_result)]
+
+        
+    }
+ 
+  }
+  
+  
+   return (final_result)
+}
+
+```
+
+```{r}
+
+# helper  
+
+heritage$show_county("臺北市")
+
+
+
+```
+
+
+
+```{r}
+
+# 再將 heritage$show_country("城市") 的 caseID 取出  --> 儲存至user$sessionData$filtered_data
+
+heritage$filter$countyChosen<- function( data ){
+  
+      caseId <- list()
+  
+     for (i in seq_along(data)){
+       
+       caseId[[i]]<- heritageData$caseId[[i]]
+       
+     }
+  
+  return(caseId)
+      
+}
+
+
+
+```
+
+
+```{r}
+
+heritage$show_county("臺北市") -> user$sessionData$county_chosen
+
+heritage$filter$countyChosen(user$sessionData$county_chosen) ->  user$sessionData$filtered_data
+
+```
+
+
+```{r}
+
+user$sessionData$filtered_data
+
+```
+
+
+
+
+
+
+
+
+```{r}
+
+heritage$filter$countychosen<- function(chosen_county){
+   
+  final_IDresult <- list()
+  
+  for (i in seq_along(heritageData$belongCity)){
+    
+    
+    if (str_detect(heritageData$belongCity[[i]],pattern=chosen_county)){
+      
+      heritageData$caseId[[i]] -> final_IDresult[[i]]
+      
+      final_IDresult <- unlist( final_IDresult)
+      
+      final_IDresult <- final_IDresult[!is.na(final_IDresult)]
+      
+      
+      
+      
+    }
+    
+    
+    
+  }
+  
+  return(final_IDresult)
+  
+}
+
+
+heritage$filter$countychosen("臺北市")
+
+
+
+
+```
+
+
+
+```{r}
+# show by county --------------------------------------------
+# App function: user wants to zoom into map that shows only the point of interests belong to certain county
+# when select choose by county on APP, it calls
+heritage$show_county() -> user$sessionData$county_chosen -> save_county_chosen
+
+
+
+
+
+```
+
+
