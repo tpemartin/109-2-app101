@@ -1,0 +1,35 @@
+---
+title: "互動式經濟資料視覺化"
+output: output_format
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+source('C:/Users/su200/Documents/GitHub/109-2-app101/R/fieldtrip.R', echo=TRUE)
+xfun::download_file("https://www.dropbox.com/s/v1eltesyszku3pc/04-Apr-2021-1640.gpx?dl=1", mode="wb")
+xfun::download_file("https://www.dropbox.com/s/nn685shrrk6z0ma/df_gpx.Rdata?dl=1", mode='wb')
+load("df_gpx.Rdata")
+```
+
+  * download: gpx
+  
+  * obtain: df_gpx
+
+### Map
+
+```{r}
+fieldtrip$create_map(heritageData)
+fieldtrip$show_path(df_gpx)
+```
+
+### Upload your data
+
+  * <https://drive.google.com/drive/folders/1I-2LjTfIcHcdqhjy5U2nhrOBVDwYUPOJ?usp=sharing>

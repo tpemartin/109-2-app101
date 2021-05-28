@@ -1,0 +1,158 @@
+---
+title: "sort_chineseNumbers"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#' Sorting chinese numbers
+#'
+#' @param origin A character vector of Chinese numbers
+#' @param descreasing A logical (default=F). TRUE means the return result should order numbers from the largest to the smallest
+#'
+#' @return A sorted vector of origin input
+#' @export
+#'
+#' @examples None.
+sort_chineseNumbers <- function(origin, descreasing=F){
+
+  return(sorted_origin)
+}
+```
+
+
+```{r}
+# 前言
+chineseNumber1 <- "零一二三四五六七八九十"
+chineseNumber2 <- "零壹貳參肆伍陸柒捌玖拾"
+chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
+chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
+oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹", "三十", "九十九")
+
+library(stringr)
+library(glue)
+library(purrr)
+
+sort_chineseNumbers(oldLevels,T)
+```
+
+```{r}
+# 排序
+sort_chineseNumbers <- function(origin, decreasing=F){
+  library(stringr)
+  library(glue)
+  library(purrr)
+  
+  map(
+  1:length(origin),
+  ~{str_replace_all(
+    oldLevels[.x],
+    c("零" = "0",
+      "[一壹]" = "1",
+      "[二貳]" = "2",
+      "[三參]" = "3",
+      "[四肆]" = "4",
+      "[五伍]" = "5",
+      "[六陸]" = "6",
+      "[七柒]" = "7",
+      "[八捌]" = "8",
+      "[九玖]" = "9",
+      "[十拾]" = "10"
+      # for (.y in 2:11) {
+      #   "[chineseNumber1_char[.y]chineseNumber2_char[.z]]" = ".y-1"},
+    )
+  )}
+) -> transfer_num
+
+transfer_num <- as.numeric(unlist(transfer_num))
+names(transfer_num) <- origin
+names(sort(transfer_num, `decreasing`)) -> sorted_origin
+  return(sorted_origin)
+}
+```
+
+```{r}
+# 討論：replace 中放迴圈？
+# 以下我的想像
+
+ str_replace_all(
+    oldLevels[.x],
+    c("零" = "0",
+      for (.y in list(2,3,4,5,6,7,8,9,10,11)) {
+          "chineseNumber1_char[.y]" = ".y-1"
+          "chineseNumber2_char[.y]" = ".y-1"
+        }))
+```
+
+
+```{r}
+# 排序
+
+pattern <- map(
+  list(2,3,4,5,6,7,8,9,10,11),
+  ~{
+    "chineseNumber1_char[.x]" = ".x-1"
+    "chineseNumber2_char[.x]" = ".x-1"
+    }
+)
+
+ for (.y in list(2,3,4,5,6,7,8,9,10,11)) {
+         paste(
+           "chineseNumber1_char[.y]" = ".y-1",
+           "chineseNumber2_char[.y]" = ".y-1"
+         )
+       } -> pattern01
+
+map(
+  1:length(oldLevels),
+  ~{str_replace_all(
+    oldLevels[.x],
+    c("零" = "0",
+      "[一壹]" = "1",
+      "[二貳]" = "2",
+      "[三參]" = "3",
+      "[四肆]" = "4",
+      "[五伍]" = "5",
+      "[六陸]" = "6",
+      "[七柒]" = "7",
+      "[八捌]" = "8",
+      "[九玖]" = "9",
+      "[十拾]" = "10"
+      # for (.y in 2:11) {
+      #   "[chineseNumber1_char[.y]chineseNumber2_char[.z]]" = ".y-1"},
+    )
+  )}
+) -> new_levels01
+
+new_levels02 <- as.numeric(unlist(new_levels01))
+names(new_levels02) <- oldLevels
+names(sort(new_levels02)) -> new_levels
+new_levels
+
+
+new01 <- sort(as.numeric(new_levels01))
+sort(
+  {new <- name(order(as.numeric(new_levels01))) <- oldLevels
+  new}
+)
+
+for (.x in 1:length(oldLevels)) {
+  str_replace_all(
+    oldLevels[.x],
+    c("零" = "0",
+      {for (.y in list(2,3,4,5,6,7,8,9,10,11)) {
+        paste(
+          "chineseNumber1_char[.y]" = ".y-1",
+          "chineseNumber2_char[.y]" = ".y-1"
+        )}
+      }
+    )
+)
+} -> new_levels01
+
+```
+
+
