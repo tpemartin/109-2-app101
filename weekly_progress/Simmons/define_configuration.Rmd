@@ -48,9 +48,9 @@ user$sessionData$game$puzzle_guess <-
 
 user <- list( sessionData= list( game= list(puzzle_guess=user$sessionData$game$puzzle_guess,
                                  
-                                 filtered_data = function(){} ,
+                                 filtered_data = user$sessionData$filtered_data ,
                                   
-                                 county_chosen = save_county_chosen  ),
+                                 county_chosen = user$sessionData$county_chosen  ),
               
                                  
               session = list( game = list( puzzle_guess = ),
@@ -69,9 +69,9 @@ user <- list( sessionData= list( game= list(puzzle_guess=user$sessionData$game$p
 heritage<-
   list(
     data = heritageData,
-    show_county = function(){},
+    show_county = heritage$show_county(),
     filter = list(
-      countyChosen = function(){}
+      countyChosen = heritage$filter$countyChosen( )
     ),
     game = list(
       puzzle_guess = function(){}
@@ -86,16 +86,7 @@ heritage<-
 ##
 
 
-heritage$show_county <- function(){  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+heritage$show_county <- function(){ 
 } 
 
   
