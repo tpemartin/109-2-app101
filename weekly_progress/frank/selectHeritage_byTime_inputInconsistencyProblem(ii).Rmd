@@ -1,0 +1,119 @@
+---
+title: "時光縮影: part 2"
+output: html_document
+---
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+list_heritageYears2 <- jsonlite::fromJSON("list_heritageYears.json")
+#knitr::purl("chinese.Rmd")
+```
+
+## 處理非正規書寫西元年份
+
+### 民國
+
+```{r}
+purrr::map(
+  list_heritageYears,
+  ~{
+    stringr::str_subset(.x, "民國")
+  }
+) -> list_minguo
+table(unlist(list_minguo))
+```
+
+### 中文西元年份
+
+```{r}
+pattern <- "一[０一二三四五六七八九十]{3}"
+purrr::map(
+  list_heritageYears,
+  ~{
+    stringr::str_subset(.x, pattern)
+  }
+) -> list_westernYearsInChineseWriting
+table(unlist(list_westernYearsInChineseWriting))
+```
+
+### 日治時代
+
+  * 替換成"1895-1945"
+
+---------------------------------------------------------------------------------------
+
+# 中文西元年份
+```{r}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(file.path(.root(),"weekly_progress/frank/chinese.R"))
+library(stringr)
+for(ii in seq_along(list_heritageYears)){
+      if(length(list_heritageYears[[ii]]!=0)){
+          pattern = "[一二][O0○０一二三四五六七八九十]{3}"
+          list_heritageYears[[ii]][str_detect(list_heritageYears[[ii]],pattern)] <-
+          chinese$convert_chnWesternYears(list_heritageYears[[ii]])
+      }
+}
+```
+
+#日治(據)時代(期)
+```{r}
+for(ii in seq_along(list_heritageYears)){
+      if(length(list_heritageYears[[ii]]!=0)){
+         pattern <- "日[治據]時[期代]"
+         `日` <- str_subset(list_heritageYears[[ii]],pattern)
+         list_heritageYears[[ii]][str_detect(list_heritageYears[[ii]],pattern)] <-
+         str_replace_all(`日`,pattern,"1895-1945")
+      }
+}
+```
+
+# 民國
+```{r}
+for(ii in seq_along(list_heritageYears)){
+      if(length(list_heritageYears[[ii]]!=0)){
+          # 處理特例
+          list_heritageYears[[ii]][str_which(list_heritageYears[[ii]],"民國一OO年")] <-
+                         c(rep("2011",length(str_which(list_heritageYears[[ii]],"民國一OO年"))))
+          list_heritageYears[[ii]][str_which(list_heritageYears[[ii]],"民國元年")] <-
+                         c(rep("1911",length(str_which(list_heritageYears[[ii]],"民國元年"))))
+          list_heritageYears[[ii]][str_which(list_heritageYears[[ii]],"民國初年")] <-
+                         c(rep("1911",length(str_which(list_heritageYears[[ii]],"民國初年"))))
+          list_heritageYears[[ii]][str_which(list_heritageYears[[ii]],"民國一○一年")] <-
+                         c(rep("2012",length(str_which(list_heritageYears[[ii]],"民國一○一年"))))
+          list_heritageYears[[ii]][str_which(list_heritageYears[[ii]],"民國一百年")] <-
+                         c(rep("2011",length(str_which(list_heritageYears[[ii]],"民國一百年"))))
+          list_heritageYears[[ii]][str_which(list_heritageYears[[ii]],"民國卅七年")] <-
+                         c(rep("1947",length(str_which(list_heritageYears[[ii]],"民國卅七年"))))
+          pattern <- "(?<=民國)[0-9○０O一二三四五六七八九十]+"
+          list_heritageYears[[ii]][str_detect(list_heritageYears[[ii]],pattern)] <-
+          chinese$convert_minguo2western(list_heritageYears[[ii]])
+      }      
+}
+
+```
+
+#檢查
+```{r}
+data.frame(
+    chn    = unlist(list_heritageYears2) ,
+    number = unlist(list_heritageYears)
+) -> check
+pos1 <- str_which(check$chn,pattern ="[一二][O0○０一二三四五六七八九十]{3}")
+pos2 <- str_which(check$chn,pattern ="日[治據]時[期代]")
+pos3 <- str_which(check$chn,pattern ="民國")
+check[c(pos1,pos2,pos3),]
+```
+
+
+
+
+
+
+
+
+
+
+
+
