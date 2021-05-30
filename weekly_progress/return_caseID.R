@@ -30,7 +30,7 @@ if(T %in% (sp::spDistsN1(location,returnedGPS_tracks[[i]],longlat=T) <= 0.05)){
                 return(
                       list(
                           caseId = {
-                                     which.min(sp::spDistsN1(matrix(location[i,1:2],nrow=1),returnedGPS,longlat=T)) -> index
+                                     which.min(sp::spDistsN1(location,returnedGPS_tracks[[i]],longlat=T)) -> index
                                      heritageData$caseId[index]
                                    }
                       )
