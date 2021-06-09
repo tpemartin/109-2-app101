@@ -31,13 +31,6 @@ library(dplyr)
 六.教養娛樂類
 七.雜項類
 
-```{r}
-names(cpi) %>% stringr::str_subset("^[一二")
-cpi %>%
-  select(
-    總指數, matches("^[一二三四五六七八]")
-  ) %>% names() %>% clipr::write_clip()
-```
 
 # 2.年物價上漲率
 與去年同期比的上漲率，如1982M3的年上漲率是
