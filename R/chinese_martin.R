@@ -1,14 +1,4 @@
----
-title: "Untitled"
-output: html_document
----
-
-
-
-
-
-
-  chinese <- list()
+chinese <- list()
 
 chinese$convert_minguo2western <- convert_minguo2western <- function(minguo_string){
   origin <- minguo_string
@@ -20,11 +10,16 @@ chinese$convert_minguo2western <- convert_minguo2western <- function(minguo_stri
     # ○ (百)，元
   }
   
-  arabics <- {
-    as.numeric(revised)
-  }
+  whichIsNonArabics <- 
+    stringr::str_which(revised, "^[0-9]+$", negate=T)
+  arabics <- vector("numeric", length(revised))
+  arabics[whichIsNonArabics] <- NA
+  # arabics <- {
+  #   as.numeric(revised)
+  # }
   
-  whichIsNonArabics <- which(is.na(arabics))
+  # whichIsNonArabics <- which(is.na(arabics))
+  
   non_arabics <- {
     revised[whichIsNonArabics]
   }
@@ -115,5 +110,20 @@ na_is_0 <- function(origin){
   origin[whichIsNA] = "0"
   return(origin)
 }
+
+as.numeric2 <- function(input){
+  purrr::map_dbl(
+    input,
+    ~{
+      tryCatch(
+        as.numeric(.x),
+        error=function(e){
+          NA
+        }
+      )
+    }
+  )
+}
+
 
 

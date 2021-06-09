@@ -1,0 +1,64 @@
+
+```{r ,echo=FALSE, eval=T}
+knitr::opts_chunk$set(echo = T, eval=F)
+```
+
+```{r eval=T, echo=F}
+library(klippy); library(stringr); library(lubridate); library(purrr); library(dplyr)
+klippy()
+```
+
+# Working with data frame
+
+  * <https://data.gov.tw/dataset/28582>
+
+```{r}
+paste(
+  "https://stats.moe.gov.tw/files/school", 
+  104:108, 
+  c(rep("faraway_new.csv",3), rep("faraway1.csv", 2)),
+  sep="/"
+) -> list_farawaySchools
+list_farawaySchools
+```
+
+
+For a given link:
+```{r}
+library(readr)
+faraway3 <- read_csv("https://stats.moe.gov.tw/files/school/108/faraway3.csv")
+```
+
+
+```{r}
+schoolYears <- 104:108
+farawaySchools <- list(
+  資料來源="https://data.gov.tw/dataset/28582",
+  依學年分=setNames(
+              vector("list", length(list_farawaySchools)),
+              schoolYears)
+)
+farawaySchools$依學年分$`104`
+```
+
+
+```{r}
+for(.x in seq_along(list_farawaySchools)){
+  dfX <- readr::read_csv(list_farawaySchools[[.x]])
+  dfX$學年 <- schoolYears[[.x]]
+  farawaySchools$依學年分[[.x]] <- dfX
+}
+```
+
+## dplyr::bind_row()
+
+```{r}
+dplyr::bind_rows(list_df[[1]], list_df[[2]], list_df[[3]])
+```
+
+```{r}
+farawaySchools$所有學年 <- 
+  do.call(dplyr::bind_rows, farawaySchools$依學年分)
+
+```
+

@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/ouurt80t6ailbif/PR0101A2Mc.csv?dl=1", mode="wb")
+```
+
+  * reopen with encoding = BIG5
+  
+```{r}
+library(readr)
+cpi <- read_csv("PR0101A2Mc.csv",
+locale = locale(encoding = "CP950"),
+skip = 3)
+
+library(dplyr)
+```
+
+# 1.
+留下總指數與大類:
+總指數
+一.食物類
+二.衣著類
+三.居住類
+四.交通及通訊類
+五.醫藥保健類
+六.教養娛樂類
+七.雜項類
+
+```{r}
+names(cpi) %>% stringr::str_subset("^[一二")
+cpi %>%
+  select(
+    總指數, matches("^[一二三四五六七八]")
+  ) %>% names() %>% clipr::write_clip()
+```
+
+# 2.年物價上漲率
+與去年同期比的上漲率，如1982M3的年上漲率是
+$$\frac{1982M3-1981M3}{1981M3}$$
+# 3. 相關
+
+`cor(x,y)`可計自兩數列的相關性，在七大類裡，何者年上漲率與總指數相關最接近1。
+
+
+
+
