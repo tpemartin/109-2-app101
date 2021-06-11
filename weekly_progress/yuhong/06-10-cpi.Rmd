@@ -1,0 +1,188 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/ouurt80t6ailbif/PR0101A2Mc.csv?dl=1", mode="wb")
+```
+
+  * reopen with encoding = BIG5
+  
+```{r}
+library(readr)
+cpi_raw_data <- read_csv("PR0101A2Mc.csv",
+locale = locale(encoding = "CP950"),
+skip = 3)
+
+library(dplyr)
+cpi_raw_data[1:485,] -> cpi_raw_data
+```
+
+# 前言
+將資料整理成 raw_data、select_data、increase_rate、correlation
+
+```{r}
+cpi <- list(
+  raw_data = list(),
+  select_data = list(),
+  increase_rate = list(),
+  correlation = list()
+)
+cpi$raw_data <- cpi_raw_data
+rm(cpi_raw_data)
+```
+
+# 1.
+留下總指數與大類:
+總指數
+一.食物類
+二.衣著類
+三.居住類
+四.交通及通訊類
+五.醫藥保健類
+六.教養娛樂類
+七.雜項類
+
+```{r}
+library(stringr)
+
+detect_names <- c()
+
+str_which(names(cpi$raw_data),"^[一二三四五六七]") -> detect_names[3:9]
+detect_names[1:2] <- c(1,2)
+cpi$raw_data[,detect_names] -> cpi$select_data
+
+rm(detect_names)
+```
+
+# 2.年物價上漲率
+與去年同期比的上漲率，如1982M3的年上漲率是
+$$\frac{1982M3-1981M3}{1981M3}*100$$
+
+## 計算 function，input/out 皆為單欄 df
+
+```{r}
+library(dplyr)
+
+rm(calculate,abc, rounds,xc)
+
+df_calculate_rate <- function(df){
+  calculate <- data.frame()
+  
+  for (.x in 1:(floor(nrow(df)/12)-1)) { #共 40 個年份，首年無法運算，取 1:39，floor 無條件捨去
+    rounds <- .x #40*12+5
+    for (.y in 1:12) {
+      if(!is.na(df[(12*rounds + .y),1])&&!is.na(df[(12*rounds +.y -12),1])){
+         (df[(12*rounds + .y),1] - df[(12*rounds +.y -12),1])/df[(12*rounds +.y -12),1]*100 ->
+      calculate[nrow(calculate)+1,1]
+      }else{
+        NA -> calculate[nrow(calculate)+1,1]
+      }
+     
+    }
+  }
+  
+  for (.x in (floor(nrow(df)/12)*12 +1) : (floor(nrow(df)/12)*12 + nrow(df)%%12)) { # 40*12+1 : 40*12+5
+    if(!is.na(df[.x,1])&&!is.na(df[(.x-12),1])){
+           (df[.x,1] - df[(.x-12),1])/df[(.x-12),1]*100 ->
+        calculate[nrow(calculate)+1,1]
+    }else{
+      NA -> calculate[nrow(calculate)+1,1]
+    }
+  }
+  return(calculate)
+}
+```
+
+## function 前試做一欄
+calculate <- data.frame()
+for (.x in 1:40) {
+  rounds <- .x #41*12+2
+  for (.y in 1:12) {
+    if(!is.na(cpi$select_data[(12*rounds + .y),2])&&!is.na(cpi$select_data[(12*rounds +.y -12),2])){
+       (cpi$select_data[(12*rounds + .y),2] - cpi$select_data[(12*rounds +.y -12),2])/cpi$select_data[(12*rounds +.y -12),2]*100 ->
+    calculate[nrow(calculate)+1,1]
+    }else{
+      NA -> calculate[nrow(calculate)+1,1]
+    }
+   
+  }
+}
+
+for (.x in 493:494) {
+  if(!is.na(cpi$select_data[.x,2])&&!is.na(cpi$select_data[(.x - 12),2])){
+         (cpi$select_data[.x,2] - cpi$select_data[(.x - 12),2])/cpi$select_data[(.x - 12),2]*100 ->
+      calculate[nrow(calculate)+1,1]
+  }else{
+    
+    NA -> calculate[nrow(calculate)+1,1]
+  }
+}
+
+## 建立 df，丟資料進去
+```{r}
+cpi$select_data[13:nrow(cpi$select_data),1] -> cpi$increase_rate[1]
+
+for (.x in 2:length(cpi$select_data)) {
+  cpi$select_data[.x]  %>% df_calculate_rate() -> cpi$increase_rate[.x]
+}
+
+# 失敗
+# cpi$select_data %>%
+#   across(
+#     .cols = c(總指數),
+#     .fns = df_calculate_rate()
+#   ) -> xx
+```
+
+
+# 3. 相關
+
+`cor(x,y)`可計自兩數列的相關性，在七大類裡，何者年上漲率與總指數相關最接近1。
+
+```{r}
+as.data.frame(cpi$increase_rate) -> cpi$increase_rate
+names(cpi$increase_rate) <- c("X1" ,"總指數","一.食物類","二.衣著類","三.居住類","四.交通及通訊類","五.醫藥保健類","六.教養娛樂類","七.雜項類")
+
+cpi$increase_rate %>% 
+  mutate(
+    across(
+      .cols = c(總指數:七.雜項類),
+      .fns = as.numeric
+    )
+  ) -> cpi$increase_rate
+
+cpi$correlation <- data.frame()
+
+for (.x in 3:9) {
+  cor(cpi$increase_rate[2],cpi$increase_rate[.x]) -> cpi$correlation[1, .x-2]
+}
+
+names(cpi$correlation) <- c("一.食物類","二.衣著類","三.居住類","四.交通及通訊類","五.醫藥保健類","六.教養娛樂類","七.雜項類")
+
+# 比大小
+calculate <- vector("list", 8)
+names(calculate) <- c("一.食物類","二.衣著類","三.居住類","四.交通及通訊類","五.醫藥保健類","六.教養娛樂類","七.雜項類","Minimum")
+
+who_is_min <- abs(cpi$correlation[2]-1)
+
+for (.x in 1:7) {
+  abs(cpi$correlation[.x]-1) -> absolute_value
+  absolute_value -> calculate[.x]
+  
+  if(min(absolute_value, who_is_min) == absolute_value){
+    absolute_value -> who_is_min
+    names(calculate[.x])-> calculate[8]
+  } 
+}
+rm(who_is_min,absolute_value)
+```
+
+
+
+
+
+
