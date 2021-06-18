@@ -88,7 +88,7 @@ heritage$validate_checkIn(returnedGPS) -> checkInResult
 heritage$validate_checkIn(returnedGPS) -> checkInResult
 
 # 資料引入
-returnedGPS = c(lon=24.8, lat=121)
+returnedGPS = c(lon=24.8, lat=125)
 xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
 load("heritageDataRevised.Rdata")
 
@@ -103,6 +103,7 @@ heritage$validate_checkIn <- function(returnedGPS){
   library(lubridate)
   library(purrr)
   checkInResult <- list()
+  distance <- list()
 
   ### 1 returnedGPS 經緯互換
   c(returnedGPS[2],returnedGPS[1]) -> returnedGPS
@@ -120,27 +121,30 @@ heritage$validate_checkIn <- function(returnedGPS){
         c(heritageData$longitude[.x], returnedGPS[1], heritageData$latitude[.x], returnedGPS[2]),
         2
       ) -> test_matrix
-      
-    }
     
     ## 計算與判斷
-    spDistsN1(pts = test_matrix, pt = test_matrix[1,] , TRUE)[2] -> distance
     
-    if(distance <= 0.1){
-      checkInResult <- append(
-        checkInResult,
-        list(
-        timestamp = now(),
-        caseId = heritage$data$caseId[.x]
-      ) 
-           )
+    distance <- append(
+      distance,
+      spDistsN1(pts = test_matrix, pt = test_matrix[1,] , TRUE)[2]
+    )
+    
     }
+    
   # for 下
   }
+    
+    if(distance[which.min(unlist(distance))] <= 0.1){
+
+      checkInResult$timestamp = format_ISO8601(now(), usetz = T)
+      
+      heritageData$caseId[!is.na(heritageData$longitude)] -> caseid_is_not_na
+      checkInResult$caseId = caseid_is_not_na[which.min(distance)]
+      
+    }else{
+      checkInResult <- NULL
+    }
   
-  if(length(checkInResult) == 0){
-    checkInResult <- NULL
-  }
 
 return(checkInResult)
 # function 下
@@ -199,7 +203,7 @@ heritage$track <- function(list_tracks){
 }
 
 
-
+heritage$track(list_tracks) -> newTraces
 
 user$visits <- append(
   urser$visits, newTraces
