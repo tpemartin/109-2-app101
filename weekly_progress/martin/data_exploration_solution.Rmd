@@ -1,0 +1,274 @@
+---
+title: "data exploration"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+## Time alignment
+
+```{r}
+library(dplyr)
+library(econR)
+googleLink_download("https://drive.google.com/file/d/1Y-MY2oGCe2RSQ99JdYyHwYyR-EjLR1Ei/view?usp=sharing")
+taskdata = readRDS(. %//% "taskdata.Rds")
+```
+
+Write the following function, so that 
+
+```{r}
+taskdata$before %>%
+  align_date(
+    date_colname = "date",
+    freq = "yearly"
+  )
+```
+
+will return an outcome like 
+```{r}
+taskdata$after
+```
+
+
+```{r}
+#' Align data frame date column
+#'
+#' @param df A data frame
+#' @param date A character of colname name in df that represents date (which is a Date class)
+#' @param freq A character of "daily", "monthly", "quarterly" or "yearly".
+#'
+#' @return
+#' @export
+#'
+#' @examples none
+align_date <- function(df, date_colname, freq="daily"){
+
+  # df = data_explore$original
+  # date_colname = "date"
+  # freq = "monthly"
+  by_freq = switch(
+    freq,
+    "monthly"={"1 month"},
+    "yearly"={"1 year"},
+    "quarterly"={"1 quarter"},
+    {"1 day"}
+  )
+  date_range=range(df[[date_colname]], na.rm=T)  
+  data.frame(
+      date_range %>%
+        {seq(.[[1]], .[[2]], by=by_freq)}
+    ) -> timeDataframe
+  names(timeDataframe)[[1]] <- date_colname
+  
+  timeDataframe %>% 
+    left_join(
+      df,
+      by=date_colname
+    ) -> dx
+  
+  return(dx)
+}
+```
+
+
+## 食物類
+
+七大類中，食物類又細分以下18子類：
+
+穀類及其製品、肉類、肉類製品、蛋類、水產品、加工水產品、蔬菜、加工蔬菜、水果、加工水果、乳類、食用油、調味品、酒、非酒精性飲料及材料、調理食品、外食費、其他食品
+
+
+```{r}
+xfun::download_file("https://www.dropbox.com/s/ouurt80t6ailbif/PR0101A2Mc.csv?dl=1", mode="wb")
+```
+
+
+```{r}
+library(readr)
+cpi <- read_csv("PR0101A2Mc.csv",
+locale = locale(encoding = "CP950"),
+skip = 3)
+
+data_explore <- list(
+  original = cpi
+)
+```
+
+請計算這18子類誰是牽動食物物價年上漲率的最主要元兇？(結果請整理成table_foodInflation dataframe模式)
+
+```{r}
+econR::googleLink_download("https://drive.google.com/file/d/12fHfa6Kr3XnAvKw_Nk-JJ5UkWr5EYPsb/view?usp=sharing")
+table_foodInflation <- readRDS(. %//% "food_inflation.Rds")
+```
+
+```{r}
+data_explore$original %>% names() %>%
+  stringr::str_which("^[一二]") -> start_endBefore
+data_explore$original %>% names() %>%
+  .[start_endBefore[[1]]:start_endBefore[[2]]] %>%
+  stringr::str_subset(
+    "^[1-9]+"
+  ) -> categories_food
+names(data_explore$subsample$major7$data)
+data_explore$original %>%
+  select(
+    "X1", "一.食物類",
+    any_of(categories_food)
+  ) %>%
+  {list(
+    data=.
+    )}-> data_explore$subsample$food
+```
+
+```{r}
+data_explore$subsample$food$data %>% 
+  mutate(
+    date=lubridate::ymd(paste0(X1,"-01"))
+  ) %>% 
+  align_date(
+    date_colname = "date", freq="monthly"
+  ) -> data_explore$subsample$food$data
+
+
+data_explore$subsample$food$data %>%
+  mutate(
+    across(
+      .cols= -c("date","X1"),
+      .fns= function(x) (x-lag(x, 12))/lag(x, 12)*100
+    )
+  ) -> 
+  data_explore$subsample$food$data_inflation
+
+data_explore$subsample$food$data_inflation %>%
+  summarise(
+    across(
+      .cols=any_of(categories_food),
+      .fns = function(x) cor(`一.食物類`, x, use = "complete.obs")
+    )
+  ) %>%
+  {list(
+    correlationWith=list(
+      all_food=.)
+    )} ->
+  data_explore$subsample$food$summary
+```
+
+```{r}
+data_explore$subsample$food$summary$correlationWith$all_food %>%
+  tidyr::pivot_longer(
+  cols = everything(),
+    names_to = "子類",
+    values_to = "相關係數"
+  ) %>%
+  arrange(
+    desc(相關係數)
+  ) %>%
+  mutate(
+    子類= paste(
+      1:n(),stringr::str_extract(子類, '\\.[^.]+'))
+  ) %>%
+  {list(
+    子類與總指數物價上漲率關連=.
+  )} -> data_explore$subsample$food$table
+```
+
+
+```{r}
+data_explore$subsample$food$table$子類與總指數物價上漲率關連 %>%
+  knitr::kable(digits=2)
+
+saveRDS(data_explore$subsample$food$table$子類與總指數物價上漲率關連 %>%
+    mutate(相關係數=NA), . %//% "food_inflation.Rds")
+```
+
+## 2330
+
+  * <https://www.twse.com.tw/zh/page/trading/exchange/STOCK_DAY.html>
+
+  * May: https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=csv&date=20210501&stockNo=2330
+
+```{r}
+library(readr)
+STOCK_DAY_response_csv_date_20210501_stockNo_2330_dl_1 <- read_csv("https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=csv&date=20210501&stockNo=2330&dl=1",
+locale = locale(encoding = "BIG5"), skip = 1)
+```
+
+下載2021年1月到5月的資料，計算收盤價的每日上漲率。接著計算在這5個月內，每個星期二～五的平均日上漲率。
+
+```{r}
+seq_month = 1:5
+purrr::map(
+  seq_month,
+  ~{readr::read_csv(glue::glue("https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=csv&date=20210{.x}01&stockNo=2330&dl=1"),locale = locale(encoding = "BIG5"), skip = 1)}
+) -> list_stock2330
+```
+
+
+```{r}
+library(dplyr)
+
+convert2westernDate <- function(obs){
+  obs %>% stringr::str_split("/") %>% #-> .x
+  purrr::map_chr(
+    ~{
+      yyyy = 1911+as.integer(.x[[1]])
+      if(is.na(yyyy)) return(NA)
+      ymd = paste(yyyy, .x[[2]], .x[[3]], sep="-")
+      
+    }
+  ) %>% lubridate::ymd()
+}
+
+.x =1
+dfX <- list_stock2330[[.x]]
+dfX %>% #names()
+  mutate(
+    日期=convert2westernDate(日期)
+  ) -> dfX2
+dfX2 %>%
+  align_date("日期") %>%
+  mutate(
+    每日收盤上漲率=(收盤價-lag(收盤價))/lag(收盤價) *100
+  ) -> dfX3
+```
+
+```{r}
+dfX3 %>%
+  mutate(
+    wday = lubridate::wday(日期)
+  ) %>%
+  group_by(
+    wday) %>%
+  summarise(
+    平均每日收盤上漲率=mean(每日收盤上漲率)
+    ) %>%
+  ungroup() -> dfX4
+library(lubridate)
+wday(ymd("2021-06-16"))
+```
+
+## github link download
+
+  * original link: <https://github.com/chao87119/109-2-app101/blob/main/weekly_progress/frank/cpi.R#L16>
+
+  * download link: <https://raw.githubusercontent.com/chao87119/109-2-app101/main/weekly_progress/frank/cpi.R>
+
+```{r}
+xfun::download_file(download_link, output=filename, mode="wb")
+file.edit(filename)
+```
+
+
+```{r}
+#' Download a Github link (provided by the clipboard) content, saved in a file and open it.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+githublink_download_open <- function(){
+  link <- clipr::read_clip()
+  
+}
+```
+

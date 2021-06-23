@@ -26,11 +26,25 @@ outofcontrol_latitude <-
     (heritageData$latitude < 27)
   & (heritageData$latitude > 3)
   )
+table(is.na(outofcontrol_latitude))
+```
 
+
+```{r version1}
 ## 02 拉出正確資料(經緯互換)
 correct_latitude <- heritageData$longitude[outofcontrol_latitude]
 correct_longitude <- heritageData$latitude[outofcontrol_latitude]
+```
 
+```{r}
+heritageData$latitude[
+  outofcontrol_latitude] <- 
+  correct_latitude
+
+```
+
+
+```{r version1}
 ## 03 更正資料
 heritageData$latitude[
   outofcontrol_latitude & !is.na(outofcontrol_latitude)] <- 
@@ -56,7 +70,26 @@ correct_lat <- h_long[(h_lat > 27)& (!is.na(h_lat))]
 heritageData$longitude[(h_lat > 27)& (!is.na(h_lat))] <- h_lat[(h_lat > 27)& (!is.na(h_lat))]
 heritageData$latitude[(h_lat > 27)& (!is.na(h_lat))] <- correct_lat
 
+heritageData[(h_lat > 27)& (!is.na(h_lat)), c("longitude","latitude")] <- heritageData[(h_lat > 27)& (!is.na(h_lat)), c("latitude", "longitude")]
+
 ```
+
+```{r}
+exampleList <- list(
+  a="3",
+  b="5"
+)
+exampleList[c("b","a")] <- exampleList[c("a","b")]
+exampleList
+```
+```{r}
+char1 <- c("david", NA, "john")
+num <- c(23, 454, NA)
+char2 <- c("david", NULL, "john")
+char1
+char2
+```
+
 
 ### version 3
 
@@ -65,7 +98,13 @@ heritageData <- heritageData0
 # limit_1 無法排除 NULL 值
 
 limit_1 <- (heritageData$longitude <25 & heritageData$latitude >120)
+table(is.na(limit_1))
+limit_1 <- limit_1[!is.na(limit_1)]
+table(is.na(limit_1))
+```
 
+
+```{r version3}
 # na_data 取出 NULL值
 
 
@@ -75,19 +114,27 @@ limit_2 <- !limit_1
 
 #須加上na_data == FALSE，否則 right_lati 會包括 NULL 值
 
-right_lati <- wrong_long <- heritageData$longitude[limit_1 & na_data==FALSE]
+right_lati <- wrong_long <- heritageData$longitude[limit_1 & na_data]
 
-right_long <- wrong_lati <- heritageData$latitude[limit_1 & na_data==FALSE]
+right_long <- wrong_lati <- heritageData$latitude[limit_1 & na_data]
+```
 
-heritageData$longitude[limit_1 & na_data==FALSE] <-right_long
+```{r}
+table(is.na(limit_1))
+table(is.na(na_data))
+```
 
-heritageData$latitude[limit_1 & na_data==FALSE] <-right_lati
+
+```{r version3}
+heritageData$longitude[limit_1 & na_data] <-right_long
+
+heritageData$latitude[limit_1 & na_data] <-right_lati
 
 # 修正後的錯誤資料
 
-heritageData$longitude[limit_1 & na_data==FALSE]
+heritageData$longitude[limit_1 & na_data]
 
-heritageData$latitude[limit_1 & na_data==FALSE]
+heritageData$latitude[limit_1 & na_data]
 
 # 取出原先正確資料
 
