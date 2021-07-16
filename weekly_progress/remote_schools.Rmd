@@ -1,0 +1,29 @@
+---
+title: "偏遠國中小學"
+---
+
+```{r}
+library(readr)
+faraway3 <- read_csv("http://stats.moe.gov.tw/files/school/108/faraway3.csv")
+
+```
+
+```{r}
+library(dplyr)
+names(faraway3)
+```
+
+
+```{r}
+faraway3 %>%
+  dplyr::group_by(鄉鎮市區) %>%
+  dplyr::summarise(
+    mean_aboriginal_ratio = mean(原住民學生比率)
+  )
+```
+
+```{r}
+group_summarise(df, group_colname, fun) 
+group_summarise(faraway3, "鄉鎮市區", "mean")
+```
+

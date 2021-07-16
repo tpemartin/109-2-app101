@@ -1,0 +1,209 @@
+---
+drake_cache: ".data_price"
+---
+
+```{r makecondition_inflationScript}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+source(
+  file.path(.root(),"R/inflation.R")
+)
+```
+
+
+  * Upload .csv data to google can resolve almost all encoding problem.
+  
+```{r makecondition_price0}
+googlesheets4::as_sheets_id("https://docs.google.com/spreadsheets/d/1NYMg3mitLyHyMlspaJTp-1JxzEwckqBYdPp-tIXlKw4/edit#gid=1347280739") -> gs_id
+
+```
+
+
+```{r makecondition_price}
+googlesheets4::read_sheet(
+  ss=gs_id,
+  sheet="price data", n_max = 43
+) -> sheet_price
+```
+
+```{r}
+droppath <- "/Users/martinl/Dropbox/github-data/109-2-interEconDV"
+save(df_inflation_long0, df_inflation_long_subcategories, df_inflation_long_total, file="/Users/martinl/Dropbox/github-data/109-2-interEconDV/price_data.Rdata")
+```
+
+```{r makecondition, drake=F}
+xfun::download_file("https://www.dropbox.com/s/c81jdk1uo06lfwj/price_data.Rdata?dl=1",
+                    mode="wb")
+load("price_data.Rdata")
+```
+
+```{r df_price0}
+# names(sheet_price)[[1]] <- "年"
+names(sheet_price) %>%
+  stringr::str_subset("([一二三四五六七]\\.)") -> items_bigCat
+sheet_price[2:41, c("...1", "總指數", items_bigCat)] %>%
+  mutate(
+    across(
+      .cols= everything(),
+      .fns= unlist
+    )
+  ) -> df_price0
+```
+
+## 年物價上漲率
+
+$$(x_t - x_{t-1})/x_{t-1}\times 100$$
+
+```{r df_inflation}
+numberOfRows <- nrow(df_price0)
+df_inflation <- (df_price0[2:numberOfRows, -1] - df_price0[1:(numberOfRows-1), -1]) / df_price0[1:(numberOfRows-1), -1] *100
+df_inflation[["...1"]] <- df_price0[["...1"]][2:numberOfRows]
+df_inflation %>% relocate("...1") -> df_inflation
+```
+
+
+```{r df_inflation_long0}
+df_inflation %>%
+  tidyr::pivot_longer(
+    cols = -"...1",
+    names_to = "項目",
+    values_to = "上漲率"
+  ) -> df_inflation_long0
+```
+
+
+```{r df_inflation_long}
+df_inflation_long <- df_inflation_long0
+names(df_inflation_long)[[1]] <- "年"
+catLevels <- unique(df_inflation_long$項目)
+df_inflation_long$項目 <- factor(
+  df_inflation_long$項目,
+  levels = catLevels
+)
+
+df_inflation_long
+```
+
+
+
+## 細項
+
+### 1. 七大類
+
+```{r pick_total}
+pick_total <- df_inflation_long$項目 == "總指數"
+
+```
+
+
+```{r df_inflation_long_subcategories}
+df_inflation_long_subcategories <- {
+  df_inflation_long[!pick_total, ]
+
+}
+```
+
+```{r df_inflation_long_total}
+df_inflation_long_total <- {
+  df_inflation_long[pick_total,]
+}
+```
+
+
+```{r plt_inflation}
+plotly::plot_ly() %>%
+  plotly::add_lines(
+    data=df_inflation_long_subcategories,
+    x=~年, y=~上漲率, split=~項目, line = list(width=1, dash="dot"), #, color=I("grey")
+  ) %>%
+  plotly::add_lines(
+    data=df_inflation_long_total,
+    x=~年, y=~上漲率, color=I("dodgerblue3"), line = list(width=3), name="總項目"
+  ) %>%
+  plotly::rangeslider() -> plt_inflation
+```
+
+
+
+### 2. 耐久，非耐久
+
+```{r makecondition_price2}
+googlesheets4::as_sheets_id("https://docs.google.com/spreadsheets/d/1NYMg3mitLyHyMlspaJTp-1JxzEwckqBYdPp-tIXlKw4/edit#gid=1347280739") -> gs_id
+googlesheets4::read_sheet(
+  ss=gs_id,
+  sheet="price data2", n_max = 43
+) -> sheet_price2
+# sheet_price2 %>%
+#   select(
+#     "...1", contains("耐久"), contains("總指數")
+#   ) -> sheet_price2a
+```
+
+```{r plt_inflationByDurability}
+list_dfInflations <- extractInflationDataFrame(sheet_price2)
+plt_inflationByDurability <- plot_inflations(list_dfInflations)
+plt_inflationByDurability
+```
+
+
+
+### 3. 購買頻率
+
+```{r makecondition_price3}
+googlesheets4::as_sheets_id("https://docs.google.com/spreadsheets/d/1NYMg3mitLyHyMlspaJTp-1JxzEwckqBYdPp-tIXlKw4/edit#gid=1347280739") -> gs_id
+googlesheets4::read_sheet(
+  ss=gs_id,
+  sheet="price data3", n_max = 43
+) -> sheet_price3
+```
+
+```{r plt_inflationByFrequency}
+list_dfInflations3 <- extractInflationDataFrame(sheet_price3)
+plt_inflationByFrequency <- plot_inflations(list_dfInflations3)
+plt_inflationByFrequency
+```
+
+### 4. 家庭所得
+
+```{r makecondition_price5}
+googlesheets4::as_sheets_id("https://docs.google.com/spreadsheets/d/1NYMg3mitLyHyMlspaJTp-1JxzEwckqBYdPp-tIXlKw4/edit#gid=1347280739") -> gs_id
+googlesheets4::read_sheet(
+  ss=gs_id,
+  sheet="price data5", n_max = 41
+) -> sheet_price5
+```
+
+```{r plt_inflationByFamilyIncome}
+list_dfInflations5 <- extractInflationDataFrame(sheet_price5, "全體家庭")
+plt_inflationByFamilyIncome <- plot_inflations(list_dfInflations5, "全體家庭")
+plt_inflationByFamilyIncome
+```
+
+## 使用迴圈
+
+```{r list_plots}
+sheetInfo <- googlesheets4::gs4_get(gs_id)
+sheetInfo$sheets$name -> sheetNames
+list_plots <- setNames(vector("list", length(sheetNames)), sheetNames)
+for(sheetX in sheetNames[-1]){
+  googlesheets4::read_sheet(
+    ss=gs_id,
+    sheet=sheetX
+  ) -> sheet_priceX
+  if(sheetX == "price data4") next
+  
+  totalName="總指數"
+  if(sheetX == "price data5"){
+    totalName="全體家庭"
+  }
+  extractInflationDataFrame(sheet_priceX, totalName) -> df_inflationX
+  plot_inflations(df_inflationX, totalName) -> list_plots[[sheetX]]
+}
+list_plots$`price data` <- plt_inflation
+
+list_plots
+```
+
+```{r}
+save(list_plots, file="list_plots.Rdata")
+```
+

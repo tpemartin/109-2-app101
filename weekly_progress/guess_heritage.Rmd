@@ -13,9 +13,9 @@ load("heritageDataRevised.Rdata")
 
 # randomly select 4 heritage
 
-# turn the 1st heritage photo into a puzzle
-
 # create heritage photo puzzle based on user defined difficulty level (easy=3x3, medium=5x5, difficult=9x9)
+
+# turn the 1st heritage photo into a puzzle
 
 
 # let user select which one is the right answer

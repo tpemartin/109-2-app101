@@ -1,0 +1,95 @@
+---
+drake_cache: ".puzzle"
+---
+
+# 拼圖
+
+  * 嘉義仁武宮
+
+```{r makecondition}
+# 下載古蹟資料
+xfun::download_file("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl=1", mode="wb")
+load("heritage.Rdata")
+```
+
+https://data.boch.gov.tw/old_upload/_upload/Assets_new/building/487/photo/%E5%98%89%E7%BE%A9%E4%BB%81%E6%AD%A6%E5%AE%AE.jpg
+
+```{r imgX}
+# 取得第一個古蹟的圖片網址
+targetUrl <- heritageData$representImage[[2]]
+targetUrlencoded <- URLencode(targetUrl)
+
+# 讀入圖片
+library(magick)
+magick::image_read(targetUrlencoded) -> imgX
+imgX
+```
+
+## Magick
+
+ * <https://cran.r-project.org/web/packages/magick/vignettes/intro.html>
+ 
+```{r puzzleX}
+magick::image_read("https://www.dropbox.com/s/tqafdnklkem45s5/imgX.jpg?dl=1") -> puzzleX
+puzzleX
+```
+
+ 
+Tools I use: 
+
+  * `image_info`, `image_crop`, `image_append`
+  
+  * `paste0`, `sample`
+
+```{r imgX_info}
+imgX_info <- magick::image_info(imgX)
+
+```
+
+```{r puzzleImgs}
+puzzle_width <- imgX_info$width/2
+puzzle_height <- imgX_info$height/2
+
+crop_area1 <- paste0(puzzle_width, "x", puzzle_height)
+img1 = magick::image_crop(imgX, crop_area1)
+img1
+crop_area2 <- paste0(puzzle_width, "x", puzzle_height, "+", puzzle_width)
+img2 = magick::image_crop(imgX, crop_area2)
+img2
+crop_area3 <- paste0(puzzle_width, "x", puzzle_height, "+0+", puzzle_height)
+img3 = magick::image_crop(imgX, crop_area3)
+img3
+crop_area4 <- paste0(puzzle_width, "x", puzzle_height, "+", puzzle_width, "+", puzzle_height)
+img4 = magick::image_crop(imgX, crop_area4)
+img4
+
+puzzleImgs <- c(
+  img1 = img1,
+  img2 = img2,
+  img3 = img3, 
+  img4 = img4
+)
+```
+
+```{r puzzleImgs_reorderd}
+reorderPuzzles <- sample(1:4, size=4)
+puzzleImgs_reorderd <- puzzleImgs[reorderPuzzles]
+```
+
+```{r puzzleComplete}
+imgTop <- puzzleImgs_reorderd[1:2]
+imgBtm <- puzzleImgs_reorderd[3:4]
+puzzleTop <- image_append(imgTop)
+puzzleBtm <- image_append(imgBtm)
+imgComplete <- c(puzzleTop, puzzleBtm)
+puzzleComplete <- image_append(imgComplete, stack = T)
+puzzleComplete
+```
+
+```{r imgX_write}
+magick::image_write(
+  puzzleComplete, path="imgX.jpg"
+)
+```
+
+

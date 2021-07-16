@@ -12,17 +12,21 @@ xfun::download_file("https://www.dropbox.com/s/s4mv5ebhsqanpew/heritage.Rdata?dl
 load("heritage.Rdata")
 ```
 
-https://data.boch.gov.tw/old_upload/_upload/Assets_new/building/487/photo/%E5%98%89%E7%BE%A9%E4%BB%81%E6%AD%A6%E5%AE%AE.jpg
 
 ```{r imgX0}
 # 取得第一個古蹟的圖片網址
-targetUrl <- heritageData$representImage[[1]]
+get_ImgInfo <- function(x){
+   targetUrl <- heritageData$representImage[[x]]
 targetUrlencoded <- URLencode(targetUrl)
-
 # 讀入圖片
 library(magick)
 magick::image_read(targetUrlencoded) -> imgX0
-imgX0
+magick::image_info(imgX0)
+}
+
+purrr::map(1:20,
+           get_ImgInfo) -> list_info 
+purrr::transpose(list_info) -> tr_list_info
 ```
 
 ## Magick
@@ -48,6 +52,7 @@ library(OpenImageR)
 ```
 
 ```{r version1}
+library(OpenImageR)
 # 取得古蹟的圖片網址
 targetUrl <- heritageData$representImage[[17]]
 targetUrlencoded <- URLencode(targetUrl)
@@ -92,6 +97,7 @@ newPicture[row_2:nrow(imgX),col_2:ncol(imgX),] <- order_list[[`圖片順序`[4]]
 newPicture
 # 生成圖片
 writeImage(newPicture,"jigsaw.jpg")
+imageShow(newPicture)
 imageShow("jigsaw.jpg")
 
 ```
@@ -99,22 +105,53 @@ imageShow("jigsaw.jpg")
 ### Version 2
 
 ```{r version2}
+   targetUrl <- heritageData$representImage[[3]]
+targetUrlencoded <- URLencode(targetUrl)
+# 讀入圖片
+library(magick)
+magick::image_read(targetUrlencoded) -> imgX0
 imgX <- imgX0
 #切割圖片
 ##取長寬
 a<-image_info(imgX)
-width <- a$width
-height <- a$height
+width <- a$width/2
+height <- a$height/2
+width
+height
+```
+```{r}
+fourCorners <- list(
+   paste0(width, "X", height, "+", 1*width,"+", 0*height),
+paste0(width, "X", height, "+", 1*width,"+", 1*height),
+paste0(width, "X", height, "+", 0*width,"+", 0*height),
+paste0(width, "X", height, "+", 0*width,"+", 1*height)
+)
+fourCorners
+```
 
+```{r}
 
+```
+
+```{r}
+fourCorners <- list(
+   paste0(width, "X", height, "+", 1*width,"+", 0*height),
+paste0(width, "X", height, "+", 1*width,"+", 1*height),
+paste0(width, "X", height, "+", 0*width,"+", 0*height),
+paste0(width, "X", height, "+", 0*width,"+", 1*height)
+)
+
+```
+
+```{r version2}
 ##分成四部分
-right_up <-image_crop(imgX,"512X341+512+0") #右上
+right_up <-image_crop(imgX,fourCorners[[1]]) #右上
 
-right_down <- image_crop(imgX,"512X341+512+341") #右下
+right_down <- image_crop(imgX,fourCorners[[2]]) #右下
 
-left_up <- image_crop(imgX,"512X341") #左上
+left_up <- image_crop(imgX,fourCorners[[3]]) #左上
 
-left_down <- image_crop(imgX,"512X341+0+314") #左下
+left_down <- image_crop(imgX,fourCorners[[4]]) #左下
 
 NewPic <- c(left_up,left_down,right_up,right_down)
 

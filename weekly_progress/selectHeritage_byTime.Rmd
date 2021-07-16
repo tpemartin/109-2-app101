@@ -1,41 +1,101 @@
 ---
 title: "時光縮影: part 3"
-output: html_document
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
 
+## Load data
 
 ```{r}
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
 xfun::download_file("https://www.dropbox.com/s/vt10xxig64levmj/list_heritageYears.json?dl=1", mode="wb")
-list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
 ```
 
-## 引入chinese模組
+## 引入模組
 
 ```{r}
+library(dplyr)
+library(lubridate)
 .root <- rprojroot::is_rstudio_project$make_fix_file()
 source(
   file.path(.root(),"R/chinese_martin.R")
 )
+source(
+  file.path(.root(),"R/years_martin.R")
+)
+load("heritageDataRevised.Rdata")
+list_heritageYears <- jsonlite::fromJSON("list_heritageYears.json")
+
 ```
 
+
+```{r}
+purrr::map(
+  list_heritageYears,
+  ~{
+    chinese$convert2westernYears(.x)
+  }
+) -> list_heritageYears_converted
+
+list_heritageYears_converted %>%
+  convertListYears2YearsWithHeritageIndexName() -> 
+  heritageYears_indexed
+
+library(lubridate)
+.start = 1923
+.end = NA
+
+start_date = convert2_yyyy0101(.start)
+flag_endNA = is.na(.end)
+end_date = ifelse(
+  flag_endNA, Inf, convert2_yyyy0101(.end)
+)  
+
+flag_covertJpnRuling <- is.japanRulingPeriod(start_date, end_date)
+
+.end = ifelse(is.na(.end), Inf, .end)
+whichFitsCriterion <- 
+  which(heritageYears_indexed$NotJp_ruled_years_indexed >= .start &
+      heritageYears_indexed$NotJp_ruled_years_indexed <= .end)
+names(heritageYears_indexed$NotJp_ruled_years_indexed)[whichFitsCriterion] %>%
+  as.integer() ->
+  index_heritage
+selected_caseIds <- 
+  unique(
+    c(
+      if(flag_covertJpnRuling) heritageYears_indexed$JP_ruled else NULL,
+      if(length(index_heritage)!=0) heritageData$caseId[index_heritage] else NULL
+    ))
+
+```
+
+```{r}
+heritageYears_indexed$NotJp_ruled_years_indexed
+id_heritages <- names(heritageYears_indexed$NotJp_ruled_years_indexed)
+
+data.frame(
+  id=id_heritages,
+  year=heritageYears_indexed$NotJp_ruled_years_indexed
+) -> df_years
+
+df_years %>%
+  group_by(id) %>%
+  summarise(
+    startYear=min(year)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    caseId = heritageData$caseId[as.numeric(id)]
+  ) -> df_startYear
+
+
+```
 
 ## 目標
 
 ```{r}
-#' 找出時間點或時間區間有交集的古蹟
-#'
-#' @param list_heritageYears_converted a list of strings.
-#' @param start a character of starting year
-#' @param end a character of ending year. if NA, means until now
-#'
-#' @return integers showing the indices of heritage that fit the criterion
-#' @export
-#'
-#' @examples
-filter_heritage <- function(list_heritageYears_converted, start, end=NA){
-  
-  return(index_fits)
-}
+filter_heritage(list_heritageYears, start=1980) -> selected_caseIds
 ```
 
 ```{r}

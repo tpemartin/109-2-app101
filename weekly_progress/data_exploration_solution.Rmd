@@ -130,7 +130,7 @@ data_explore$subsample$food$data %>%
   ) -> data_explore$subsample$food$data
 
 
-data_explore$subsample$food$data %>% 
+data_explore$subsample$food$data %>%
   mutate(
     across(
       .cols= -c("date","X1"),
@@ -139,12 +139,11 @@ data_explore$subsample$food$data %>%
   ) -> 
   data_explore$subsample$food$data_inflation
 
-data_explore$subsample$food$data_inflation %>% 
-  na.omit() %>% #View()
+data_explore$subsample$food$data_inflation %>%
   summarise(
     across(
       .cols=any_of(categories_food),
-      .fns = function(x) cor(`一.食物類`, x)
+      .fns = function(x) cor(`一.食物類`, x, use = "complete.obs")
     )
   ) %>%
   {list(
@@ -155,19 +154,19 @@ data_explore$subsample$food$data_inflation %>%
 ```
 
 ```{r}
-data_explore$subsample$food$summary$correlationWith$all_food %>% #View()
+data_explore$subsample$food$summary$correlationWith$all_food %>%
   tidyr::pivot_longer(
   cols = everything(),
-    names_to = "子類", # original column 'names' change 'to'
-    values_to = "相關係數" # original column 'values' change 'to'
-  ) %>% 
+    names_to = "子類",
+    values_to = "相關係數"
+  ) %>%
   arrange(
     desc(相關係數)
   ) %>%
   mutate(
     子類= paste(
       1:n(),stringr::str_extract(子類, '\\.[^.]+'))
-  ) %>% #View()
+  ) %>%
   {list(
     子類與總指數物價上漲率關連=.
   )} -> data_explore$subsample$food$table
@@ -221,9 +220,7 @@ convert2westernDate <- function(obs){
 }
 
 .x =1
-purrr::map(
-  seq_month,
-  ~{dfX <- list_stock2330[[.x]]
+dfX <- list_stock2330[[.x]]
 dfX %>% #names()
   mutate(
     日期=convert2westernDate(日期)
@@ -233,10 +230,6 @@ dfX2 %>%
   mutate(
     每日收盤上漲率=(收盤價-lag(收盤價))/lag(收盤價) *100
   ) -> dfX3
-  dfX3
-}
-) -> list_stockChanges
-
 ```
 
 ```{r}

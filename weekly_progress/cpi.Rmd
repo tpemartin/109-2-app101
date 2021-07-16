@@ -11,7 +11,7 @@ xfun::download_file("https://www.dropbox.com/s/ouurt80t6ailbif/PR0101A2Mc.csv?dl
 
   * reopen with encoding = BIG5
   
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(readr)
 cpi <- read_csv("PR0101A2Mc.csv",
 locale = locale(encoding = "CP950"),
@@ -31,14 +31,104 @@ library(dplyr)
 六.教養娛樂類
 七.雜項類
 
+```{r}
+data_explore <- list(
+  original = cpi,
+  subsample = list()
+)
+cpi %>%
+  select(matches("(X1|總指數|^[一二三四五六七])")) %>% 
+  {list(
+      data=. 
+  )} -> data_explore$subsample$major7
+```
+
 
 # 2.年物價上漲率
 與去年同期比的上漲率，如1982M3的年上漲率是
-$$\frac{1982M3-1981M3}{1981M3}$$
+$$\frac{1982M3-1981M3}{1981M3}*100$$
+```{r}
+data_explore$subsample$major7$data %>% 
+  mutate(
+    across(
+      .cols=-X1,
+      .fns = function(x) (x - lag(x, n=12))/lag(x, n=12) * 100 
+    )
+  ) -> data_explore$subsample$major7$data_inflation
+```
+
+
+The above program only works if date is correctly input -- no missing or wrong order. The following approach is safer:
+
+```{r}
+data_explore$original %>%
+  mutate(
+    date= X1 %>% {lubridate::ymd(paste0(., "-01"))} 
+  ) -> data_explore$original
+
+# 9 footnotes cause warning
+which(is.na(data_explore$original$date)) %>%
+  {data_explore$original[., ]} %>%
+  View()
+data_explore$original %>%
+  filter(
+    !is.na(date)
+  ) -> data_explore$original
+
+data_explore$original %>%
+  relocate(date) %>%
+  select(-X1) -> data_explore$original
+
+data_explore$original %>%
+  arrange(date) -> data_explore$original
+
+# time alignment
+data_explore$original$date %>%
+  range() -> date_range
+
+data.frame(
+  "date"= 
+    date_range %>%
+      {seq(.[[1]], .[[2]], by="1 quarter")}
+  ) -> timeDataframe
+
+timeDataframe %>% 
+  left_join(
+    data_explore$original,
+    by="date"
+  ) -> dx
+View(data_explore$original)
+```
+
+
 # 3. 相關
 
 `cor(x,y)`可計自兩數列的相關性，在七大類裡，何者年上漲率與總指數相關最接近1。
 
+```{r}
+data_explore$subsample$major7$data_inflation %>% 
+  filter(!is.na(總指數)) %>%
+  summarise(
+    across(
+      .cols=matches("^[一二三四五六七]"),
+      .fns = function(x) cor(總指數, x)
+    )
+  ) %>%
+  {
+    list(
+      correlationWith = list(
+        total_cpi =.
+      )
+    )
+    }-> 
+  data_explore$subsample$major7$summary_inflation
+```
 
 
+```{r}
+knitr::kable(
+  data_explore$subsample$major7$summary_inflation$correlationWith$total_cpi, 
+  digits = 2
+)
+```
 

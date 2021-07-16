@@ -20,13 +20,36 @@ Write the following function, so that
 taskdata$before %>%
   align_date(
     date_colname = "date",
-    freq = "yearly"
+    freq = "yearly" # monthly daily quarterly
   )
 ```
 
+```{r}
+taskdata$after %>%
+  mutate(
+    xchange = x-lag(x)
+  ) 
+```
+
+```{r}
+data.frame(
+  date=taskdata$after$date
+) -> template
+template %>% View()
+```
+
+```{r}
+template %>% 
+  left_join(
+    taskdata$before,
+    by="date"
+  )
+```
+
+
 will return an outcome like 
 ```{r}
-taskdata$after
+View(taskdata$after)
 ```
 
 
@@ -80,6 +103,8 @@ table_foodInflation <- readRDS(. %//% "food_inflation.Rds")
 
   * May: https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=csv&date=20210501&stockNo=2330
 
+https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=csv&date=20210501&stockNo=2330&dl=1
+
 ```{r}
 library(readr)
 STOCK_DAY_response_csv_date_20210501_stockNo_2330_dl_1 <- read_csv("https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=csv&date=20210501&stockNo=2330&dl=1",
@@ -93,6 +118,17 @@ locale = locale(encoding = "BIG5"), skip = 1)
   * original link: <https://github.com/chao87119/109-2-app101/blob/main/weekly_progress/frank/cpi.R#L16>
 
   * download link: <https://raw.githubusercontent.com/chao87119/109-2-app101/main/weekly_progress/frank/cpi.R>
+
+```{r}
+link <- "https://raw.githubusercontent.com/jilufu/109-2-app101/5335adad8e220f85c26c37b4d367babcb7e7c4c0/weekly_progress/jilu/cpi.Rmd"
+filename <- basename(link)
+  xfun::download_file(link, output=filename , mode="wb")
+file.edit(filename)
+```
+
+```{r}
+download_open("https://raw.githubusercontent.com/chao87119/109-2-app101/main/weekly_progress/frank/cpi.R")
+```
 
 ```{r}
 xfun::download_file(download_link, output=filename, mode="wb")
@@ -110,6 +146,8 @@ file.edit(filename)
 githublink_download_open <- function(){
   link <- clipr::read_clip()
   
+  
+  download_open(...)
 }
 ```
 

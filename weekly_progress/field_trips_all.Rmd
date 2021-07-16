@@ -1,0 +1,81 @@
+---
+title: "互動式經濟資料視覺化"
+output: output_format
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(leaflet)
+xfun::download_file("https://www.dropbox.com/s/2rryka3cprtgfok/heritageDataRevised.Rdata?dl=1", mode="wb")
+load("heritageDataRevised.Rdata")
+source('~/Github/109-2-app101/R/fieldtrip.R', echo=TRUE)
+xfun::download_file("https://www.dropbox.com/s/v1eltesyszku3pc/04-Apr-2021-1640.gpx?dl=1", mode="wb")
+xfun::download_file("https://www.dropbox.com/s/nn685shrrk6z0ma/df_gpx.Rdata?dl=1", mode='wb')
+load("df_gpx.Rdata")
+```
+
+  * download: gpx
+  
+  * obtain: df_gpx
+
+### Map
+
+```{r}
+fieldtrip$create_map(heritageData)
+fieldtrip$show_path(df_gpx)
+```
+
+### Frontend returned data
+
+
+```{r}
+.root <- rprojroot::is_rstudio_project$make_fix_file()
+destfile = 
+  file.path(.root(), "userGPX.zip")
+xfun::download_file(
+  "https://www.dropbox.com/s/hrcaa0cqdr2fzk0/GPX-20210526T044452Z-001.zip?dl=1", 
+  output = destfile,
+  mode="wb"
+)
+destfolder <- 
+  file.path(.root(),"gpx")
+if(!dir.exists(destfolder)) dir.create(destfolder)
+unzip(destfile, junkpaths = TRUE, exdir=destfolder)
+list_files <- 
+  list.files(path=destfolder, full.names = T)
+gpxFiles <- 
+  stringr::str_subset(
+    list_files, "\\.gpx$"
+  )
+
+purrr::map(
+  gpxFiles,
+  ~{
+    plotKML::readGPX(
+     .x 
+    ) -> dataX
+    
+    dataX$tracks[[1]][[1]]
+  }
+) -> list_tracks
+
+```
+
+# Backend process
+
+```{r}
+track <- function(list_tracks){
+  
+  
+  
+}
+```
+
+
+

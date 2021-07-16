@@ -37,11 +37,17 @@ purrr::map(
     chinese$convert2westernYears(.x)
   }
 ) -> list_heritageYears_converted
+```
 
+
+```{r}
 list_heritageYears_converted %>%
   convertListYears2YearsWithHeritageIndexName() -> 
   heritageYears_indexed
+```
 
+
+```{r}
 # test filter algorithm
 library(lubridate)
 .start = 1923

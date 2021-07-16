@@ -51,13 +51,38 @@ chineseNumber1_char <- unlist(stringr::str_split(chineseNumber1,""))
 chineseNumber2_char <- unlist(stringr::str_split(chineseNumber2,""))
 oldLevels <- c("一", "七", "五", "五十七", "參拾參", "拾壹")
 
-{ # Your algorithm
+oldLevels_inArabicNumber <- { # Your algorithm
+  mapChinese2 <- mapChinese1 <- as.character(0:10)
+  names(mapChinese1) <- chineseNumber1_char
+  names(mapChinese2) <- chineseNumber2_char
   
-  
-  
+  stringr::str_replace_all(
+    oldLevels, mapChinese1
+  ) -> oldLevelsReplacement1
+  stringr::str_replace_all(
+    oldLevelsReplacement1, mapChinese2
+  ) -> oldLevels_translated
+}
+
+newLevels <- {
+  as.numeric(oldLevels_inArabicNumber) -> arabicNumberLevels
+  names(arabicNumberLevels) <- oldLevels
+  sort(arabicNumberLevels) -> arabicNumberLevels_sorted
+  names(arabicNumberLevels_sorted)
+}
+
+# Another possible one
+newLevels <- {
+  order_index <- order(as.numeric(oldLevels_inArabicNumber))
+  oldLevels[order_index]
 }
 
 newLevels 
 ```
 
+c("一", "五","七","拾壹", "參拾參",  "五十七")
+
+```{r}
+factor(string, levels= chineseNumberLevel(string))
+```
 

@@ -1,6 +1,8 @@
 ---
 title: "時光縮影"
-output: html_document
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
 
   * Goal: 依使用者選定年份區間，篩出有事蹟出現在年份區間的古蹟。
@@ -18,10 +20,57 @@ load("heritageDataRevised.Rdata")
 heritage1 <- heritageData[1,]
 heritage1$pastHistory
 ```
+```{r}
+stringr::str_extract_all(heritage1$pastHistory, "1[0-9]{3}")
+```
+
 
 ```{r}
 heritage25 <- heritageData[25,]
 heritage25$pastHistory
+stringr::str_extract_all(heritage25$pastHistory, "1[0-9]{3}")
+
+```
+
+```{r}
+chineseNumbers <- "[O一二三四五六七八九]"
+pattern1 <- glue::glue("(?<=\\\\())一<<chineseNumbers>>{3}(?=\\\\))", .open = "<<", .close=">>")
+pattern1
+list_heritageYears <- purrr::map(
+  heritageData$pastHistory,
+  ~unlist(stringr::str_extract_all(.x,
+                                   glue::glue("1[0-9]{3}|一.{3}年|民國.{1,3}年|[\u4E00-\u9FFF]{2}時代|<<pattern1>>",
+                                              .open = "<<",
+                                              .close = ">>")))
+)
+list_heritageYears
+```
+
+```{r}
+list_heritageYears <- purrr::map(
+  heritageData$pastHistory,
+  ~unlist(stringr::str_extract_all(.x,
+          paste(
+          "1[0-9]{3}",
+          "一.{3}年",
+          "民國.{1,3}年",
+          "[\u4E00-\u9FFF]{2}時代", 
+          "一[O一二三四五六七八九]{3}",
+          "日治時期",
+          sep="|")))
+)
+list_heritageYears
+```
+
+年份有問題
+```{r}
+pick_problem <- unlist(purrr::map(
+  list_heritageYears,
+  ~{
+    length(.x)==0
+  }
+))
+heritageData$pastHistory[pick_problem]
 ```
 
 
